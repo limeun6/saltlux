@@ -23,6 +23,8 @@
 	
 	<context:component-scan base-package="com.saltlux.three" />
 	
+	<view-controller path="/req_form" view-name="req_form"/>
+	<view-controller path="/req_image_ajax1" view-name="req_image_ajax1"/>
 	
 	
 </beans:beans>
