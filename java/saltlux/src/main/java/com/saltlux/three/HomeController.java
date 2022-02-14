@@ -19,8 +19,13 @@ public class HomeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 	
-	/**
-	 * Simply selects the home view to render by returning its name.
+	/*
+		-내용
+      		(20220214/수정자)aaaa
+      		(20220216/수정자)bbbb
+      	-변수정의
+      		Locale:이아이는 무엇인가어디서 왔는가무엇을 받는가
+      		Model:
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
