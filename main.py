@@ -32,7 +32,7 @@ def rest_api_test1():
         f= request.files['file']
         f.save(f.filename)
         data.update({'param': param, 'file':f.filename})
-    
+
     response= make_response(jsonify(data))
     response.headers.add("Access-Control-Allow-Origin", "*")
     return jsonify(data)
