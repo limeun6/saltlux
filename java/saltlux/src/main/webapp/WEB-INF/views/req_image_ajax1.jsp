@@ -5,11 +5,10 @@
 <head>
 <meta charset="UTF-8">
 <title>요청폼</title>
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
 	
 </script>
-<script type="text/javascript">
+<script>
 	$(function() {
 		$("input[type=button]").click(function() {
 			console.log()
