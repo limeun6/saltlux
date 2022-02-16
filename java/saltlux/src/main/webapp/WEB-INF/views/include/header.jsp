@@ -27,6 +27,20 @@
     <!-- FAVICON -->
     <link href="images/favicon.png" rel="shortcut icon">
 	
+	<!-- Styles -->
+	<style>
+	#chartdiv {
+	  width: 100%;
+	  height: 500px;
+	}
+	</style>
+	
+	<!-- Resources -->
+	<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+	
 </head>
 
 <body class="body-wrapper">
