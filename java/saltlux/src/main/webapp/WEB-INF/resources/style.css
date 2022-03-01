@@ -976,3 +976,13 @@ html {
     background: #FF889E;
     border: #FF889E;
 }
+
+
+/*--------------------------------------------------------------
+# resultDetail.jsp
+--------------------------------------------------------------*/
+.headerTitle{
+	text-align: center;
+	margin: 0 auto;
+	font-size: 18px;
+}

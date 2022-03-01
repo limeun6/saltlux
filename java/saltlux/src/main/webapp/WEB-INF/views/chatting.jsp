@@ -19,17 +19,18 @@
 <!-- bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
-
   <!-- amcharts : Comparing Different Date Values Google Analytics Style -->
   <!-- Styles -->
 	<style>
-	#chartdiv {
-	  width: 70%;
-	  height: 200px;
+	#counselorChartdiv1 {
+	  width: 90%;
+  	  height: 180px;
+	  max-width: 100%;
 	}
-	#chartdiv2 {
-	  width: 70%;
-	  height: 200px;
+	#customerChartdiv1 {
+	  width: 90%;
+  	  height: 180px;
+	  max-width: 100%;
 	}
 	</style>
 	
@@ -55,7 +56,7 @@
 			var hours = now.getHours();	// 시간
 			var minutes = now.getMinutes();	// 분
 			var seconds = now.getSeconds();	// 초
-			
+
 			// 비동기요청
 			$.ajax({
 				url:req_url,
@@ -142,24 +143,13 @@
 		})
 	})
 	</script>
-<!-- 
 	<script>
-	function popup(){
-		var url="resultDetail.jsp";
-		var name="popup";
-		window.open(url, name, "width=500, height=600, status=no, menubar=no, toolbar=no, resizable=no, location=no, scrollbars=yes")
-	}
-	</script>
-
-	<script>
-	//javascript
 	function openWindowPop(url, name){
-	    var options = 'top=10, left=10, width=500, height=600, status=no, menubar=no, toolbar=no, resizable=no';
+	    var options = 'top=10, left=10, width=1200, height=800, status=no, menubar=no, toolbar=no, resizable=no';
 	    window.open(url, name, options);
 	}
 	</script>
- -->
-	
+
 </head>
 <body>
 <!-- partial:index.partial.html -->
@@ -209,19 +199,17 @@
   <div class="detail-area">
    <div class="detail-area-header">
     <div class="detail-title">상담사 감정상태</div>
-	<div id="chartdiv"></div>
+	<div id="counselorChartdiv1"></div>
    </div>
    <div class="detail-area-header">
     <div class="detail-title">고객 감정상태</div>
-    <div id="chartdiv2"></div>
+    <div id="customerChartdiv1"></div>
    </div>
    
    <br>
   
    <div class="detail-btn">
-	<a href="javascript:openWindowPop('resultDetail.jsp', 'popup');" id="resultDetailBtn" role="button" aria-pressed="true">팝업창 열기</a>
-   	<!-- <a href="resultDetail.jsp" id="resultDetailBtn" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">결과 상세보기</a> -->
-     <!-- <input onclick="popup()" type="button" value="참조"> -->
+	<a href="javascript:openWindowPop('resultDetail', 'popup');" id="resultDetailBtn" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">결과 상세보기</a>
    </div>
    
   </div>
@@ -230,8 +218,6 @@
 <!-- partial -->
   <script  src="./script.js"></script>
 
-</body>
-</html>
 
 <%@ include file="./include/footer.jsp" %>
 
@@ -240,12 +226,12 @@
 am5.ready(function() {
 
 // Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element
-var root = am5.Root.new("chartdiv");
+// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
+var root = am5.Root.new("counselorChartdiv1");
 
 
 // Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/
+// https://www.amcharts.com/docs/v5/concepts/themes/ 
 root.setThemes([
   am5themes_Animated.new(root)
 ]);
@@ -257,22 +243,37 @@ var chart = root.container.children.push(am5xy.XYChart.new(root, {
   panX: true,
   panY: true,
   wheelX: "panX",
-  wheelY: "zoomX"
+  wheelY: "zoomX",
+  maxTooltipDistance: 0
 }));
 
-chart.get("colors").set("step", 3);
 
+var date = new Date();
+date.setHours(0, 0, 0, 0);
+var value = 100;
 
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
-cursor.lineY.set("visible", false);
+function generateData() {
+  value = Math.round((Math.random() * 10 - 4.2) + value);
+  am5.time.add(date, "day", 1);
+  return {
+    date: date.getTime(),
+    value: value
+  };
+}
+
+function generateDatas(count) {
+  var data = [];
+  for (var i = 0; i < count; ++i) {
+    data.push(generateData());
+  }
+  return data;
+}
 
 
 // Create axes
 // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
 var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.3,
+  maxDeviation: 0.2,
   baseInterval: {
     timeUnit: "day",
     count: 1
@@ -282,112 +283,117 @@ var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
 }));
 
 var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  maxDeviation: 0.3,
   renderer: am5xy.AxisRendererY.new(root, {})
 }));
 
 
 // Add series
 // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-var series = chart.series.push(am5xy.LineSeries.new(root, {
-  name: "Series 1",
-  xAxis: xAxis,
-  yAxis: yAxis,
-  valueYField: "value1",
-  valueXField: "date",
-  tooltip: am5.Tooltip.new(root, {
-    labelText: "{valueX}: {valueY}\n{previousDate}: {value2}"
+for (var i = 0; i < 5; i++) {
+  var series = chart.series.push(am5xy.LineSeries.new(root, {
+    name: "Series " + i,
+    xAxis: xAxis,
+    yAxis: yAxis,
+    valueYField: "value",
+    valueXField: "date",
+    legendValueText: "{valueY}",
+    tooltip: am5.Tooltip.new(root, {
+      pointerOrientation: "horizontal",
+      labelText: "{valueY}"
+    })
+  }));
+
+  date = new Date();
+  date.setHours(0, 0, 0, 0);
+  value = 0;
+
+  var data = generateDatas(100);
+  series.data.setAll(data);
+
+  // Make stuff animate on load
+  // https://www.amcharts.com/docs/v5/concepts/animations/
+  series.appear();
+}
+
+
+// Add cursor
+// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+  behavior: "none"
+}));
+cursor.lineY.set("visible", false);
+
+// Add legend
+// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
+var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
+  width: 200,
+  paddingLeft: 15,
+  height: am5.percent(100)
+}));
+
+// When legend item container is hovered, dim all the series except the hovered one
+legend.itemContainers.template.events.on("pointerover", function(e) {
+  var itemContainer = e.target;
+
+  // As series list is data of a legend, dataContext is series
+  var series = itemContainer.dataItem.dataContext;
+
+  chart.series.each(function(chartSeries) {
+    if (chartSeries != series) {
+      chartSeries.strokes.template.setAll({
+        strokeOpacity: 0.15,
+        stroke: am5.color(0x000000)
+      });
+    } else {
+      chartSeries.strokes.template.setAll({
+        strokeWidth: 3
+      });
+    }
   })
-}));
+})
 
-series.strokes.template.setAll({
-  strokeWidth: 2
+// When legend item container is unhovered, make all series as they are
+legend.itemContainers.template.events.on("pointerout", function(e) {
+  var itemContainer = e.target;
+  var series = itemContainer.dataItem.dataContext;
+
+  chart.series.each(function(chartSeries) {
+    chartSeries.strokes.template.setAll({
+      strokeOpacity: 1,
+      strokeWidth: 1,
+      stroke: chartSeries.get("fill")
+    });
+  });
+})
+
+legend.itemContainers.template.set("width", am5.p100);
+legend.valueLabels.template.setAll({
+  width: am5.p100,
+  textAlign: "right"
 });
 
-series.get("tooltip").get("background").set("fillOpacity", 0.5);
-
-var series2 = chart.series.push(am5xy.LineSeries.new(root, {
-  name: "Series 2",
-  xAxis: xAxis,
-  yAxis: yAxis,
-  valueYField: "value2",
-  valueXField: "date"
-}));
-series2.strokes.template.setAll({
-  strokeDasharray: [2, 2],
-  strokeWidth: 2
-});
-
-// Set date fields
-// https://www.amcharts.com/docs/v5/concepts/data/#Parsing_dates
-root.dateFormatter.setAll({
-  dateFormat: "yyyy-MM-dd",
-  dateFields: ["valueX"]
-});
-
-//Set data
-var data = [{
-  date: new Date(2019, 5, 12).getTime(),
-  value1: 50,
-  value2: 48,
-  previousDate: new Date(2019, 5, 5)
-}, {
-  date: new Date(2019, 5, 13).getTime(),
-  value1: 53,
-  value2: 51,
-  previousDate: "2019-05-06"
-}, {
-  date: new Date(2019, 5, 14).getTime(),
-  value1: 56,
-  value2: 58,
-  previousDate: "2019-05-07"
-}, {
-  date: new Date(2019, 5, 15).getTime(),
-  value1: 52,
-  value2: 53,
-  previousDate: "2019-05-08"
-}, {
-  date: new Date(2019, 5, 16).getTime(),
-  value1: 48,
-  value2: 44,
-  previousDate: "2019-05-09"
-}, {
-  date: new Date(2019, 5, 17).getTime(),
-  value1: 47,
-  value2: 42,
-  previousDate: "2019-05-10"
-}, {
-  date: new Date(2019, 5, 18).getTime(),
-  value1: 59,
-  value2: 55,
-  previousDate: "2019-05-11"
-}]
-
-series.data.setAll(data);
-series2.data.setAll(data);
+// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
+legend.data.setAll(chart.series.values);
 
 
 // Make stuff animate on load
 // https://www.amcharts.com/docs/v5/concepts/animations/
-series.appear(1000);
-series2.appear(1000);
 chart.appear(1000, 100);
 
 }); // end am5.ready()
 </script>
 
 
-<!-- Chart code -->
 <script>
 am5.ready(function() {
 
 // Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element
-var root = am5.Root.new("chartdiv2");
+// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
+var root = am5.Root.new("customerChartdiv1");
 
 
 // Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/
+// https://www.amcharts.com/docs/v5/concepts/themes/ 
 root.setThemes([
   am5themes_Animated.new(root)
 ]);
@@ -399,22 +405,37 @@ var chart = root.container.children.push(am5xy.XYChart.new(root, {
   panX: true,
   panY: true,
   wheelX: "panX",
-  wheelY: "zoomX"
+  wheelY: "zoomX",
+  maxTooltipDistance: 0
 }));
 
-chart.get("colors").set("step", 3);
 
+var date = new Date();
+date.setHours(0, 0, 0, 0);
+var value = 100;
 
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
-cursor.lineY.set("visible", false);
+function generateData() {
+  value = Math.round((Math.random() * 10 - 4.2) + value);
+  am5.time.add(date, "day", 1);
+  return {
+    date: date.getTime(),
+    value: value
+  };
+}
+
+function generateDatas(count) {
+  var data = [];
+  for (var i = 0; i < count; ++i) {
+    data.push(generateData());
+  }
+  return data;
+}
 
 
 // Create axes
 // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
 var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.3,
+  maxDeviation: 0.2,
   baseInterval: {
     timeUnit: "day",
     count: 1
@@ -424,95 +445,101 @@ var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
 }));
 
 var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  maxDeviation: 0.3,
   renderer: am5xy.AxisRendererY.new(root, {})
 }));
 
 
 // Add series
 // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-var series = chart.series.push(am5xy.LineSeries.new(root, {
-  name: "Series 1",
-  xAxis: xAxis,
-  yAxis: yAxis,
-  valueYField: "value1",
-  valueXField: "date",
-  tooltip: am5.Tooltip.new(root, {
-    labelText: "{valueX}: {valueY}\n{previousDate}: {value2}"
+for (var i = 0; i < 5; i++) {
+  var series = chart.series.push(am5xy.LineSeries.new(root, {
+    name: "Series " + i,
+    xAxis: xAxis,
+    yAxis: yAxis,
+    valueYField: "value",
+    valueXField: "date",
+    legendValueText: "{valueY}",
+    tooltip: am5.Tooltip.new(root, {
+      pointerOrientation: "horizontal",
+      labelText: "{valueY}"
+    })
+  }));
+
+  date = new Date();
+  date.setHours(0, 0, 0, 0);
+  value = 0;
+
+  var data = generateDatas(100);
+  series.data.setAll(data);
+
+  // Make stuff animate on load
+  // https://www.amcharts.com/docs/v5/concepts/animations/
+  series.appear();
+}
+
+
+// Add cursor
+// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+  behavior: "none"
+}));
+cursor.lineY.set("visible", false);
+
+// Add legend
+// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
+var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
+  width: 200,
+  paddingLeft: 15,
+  height: am5.percent(100)
+}));
+
+// When legend item container is hovered, dim all the series except the hovered one
+legend.itemContainers.template.events.on("pointerover", function(e) {
+  var itemContainer = e.target;
+
+  // As series list is data of a legend, dataContext is series
+  var series = itemContainer.dataItem.dataContext;
+
+  chart.series.each(function(chartSeries) {
+    if (chartSeries != series) {
+      chartSeries.strokes.template.setAll({
+        strokeOpacity: 0.15,
+        stroke: am5.color(0x000000)
+      });
+    } else {
+      chartSeries.strokes.template.setAll({
+        strokeWidth: 3
+      });
+    }
   })
-}));
+})
 
-series.strokes.template.setAll({
-  strokeWidth: 2
+// When legend item container is unhovered, make all series as they are
+legend.itemContainers.template.events.on("pointerout", function(e) {
+  var itemContainer = e.target;
+  var series = itemContainer.dataItem.dataContext;
+
+  chart.series.each(function(chartSeries) {
+    chartSeries.strokes.template.setAll({
+      strokeOpacity: 1,
+      strokeWidth: 1,
+      stroke: chartSeries.get("fill")
+    });
+  });
+})
+
+legend.itemContainers.template.set("width", am5.p100);
+legend.valueLabels.template.setAll({
+  width: am5.p100,
+  textAlign: "right"
 });
 
-series.get("tooltip").get("background").set("fillOpacity", 0.5);
-
-var series2 = chart.series.push(am5xy.LineSeries.new(root, {
-  name: "Series 2",
-  xAxis: xAxis,
-  yAxis: yAxis,
-  valueYField: "value2",
-  valueXField: "date"
-}));
-series2.strokes.template.setAll({
-  strokeDasharray: [2, 2],
-  strokeWidth: 2
-});
-
-// Set date fields
-// https://www.amcharts.com/docs/v5/concepts/data/#Parsing_dates
-root.dateFormatter.setAll({
-  dateFormat: "yyyy-MM-dd",
-  dateFields: ["valueX"]
-});
-
-//Set data
-var data = [{
-  date: new Date(2019, 5, 12).getTime(),
-  value1: 50,
-  value2: 48,
-  previousDate: new Date(2019, 5, 5)
-}, {
-  date: new Date(2019, 5, 13).getTime(),
-  value1: 53,
-  value2: 51,
-  previousDate: "2019-05-06"
-}, {
-  date: new Date(2019, 5, 14).getTime(),
-  value1: 56,
-  value2: 58,
-  previousDate: "2019-05-07"
-}, {
-  date: new Date(2019, 5, 15).getTime(),
-  value1: 52,
-  value2: 53,
-  previousDate: "2019-05-08"
-}, {
-  date: new Date(2019, 5, 16).getTime(),
-  value1: 48,
-  value2: 44,
-  previousDate: "2019-05-09"
-}, {
-  date: new Date(2019, 5, 17).getTime(),
-  value1: 47,
-  value2: 42,
-  previousDate: "2019-05-10"
-}, {
-  date: new Date(2019, 5, 18).getTime(),
-  value1: 59,
-  value2: 55,
-  previousDate: "2019-05-11"
-}]
-
-series.data.setAll(data);
-series2.data.setAll(data);
+// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
+legend.data.setAll(chart.series.values);
 
 
 // Make stuff animate on load
 // https://www.amcharts.com/docs/v5/concepts/animations/
-series.appear(1000);
-series2.appear(1000);
 chart.appear(1000, 100);
 
 }); // end am5.ready()

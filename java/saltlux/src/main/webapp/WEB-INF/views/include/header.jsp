@@ -14,7 +14,7 @@
   <script src="https://kit.fontawesome.com/def66b134a.js" crossorigin="anonymous"></script>
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
+  <!-- <link href="assets/img/favicon.png" rel="icon"> -->
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
