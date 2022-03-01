@@ -956,7 +956,6 @@ html {
   }
 }
 
-
 .app {
 	margin-top: 10px;
 	margin-bottom: 50px;
@@ -977,12 +976,3 @@ html {
     border: #FF889E;
 }
 
-
-/*--------------------------------------------------------------
-# resultDetail.jsp
---------------------------------------------------------------*/
-.headerTitle{
-	text-align: center;
-	margin: 0 auto;
-	font-size: 18px;
-}
