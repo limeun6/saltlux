@@ -63,6 +63,41 @@ def ai_bot():
     response.headers.add("Access-Control-Allow-Origin",	"*")
     return response
 
+@app.route("/chatting", methods=["POST"])
+def chatting():
+    #자바에서 들어온 값
+    customerInput = request.form.get('customerInput')
+    print(customerInput)
+    # 감정/감성분석결과 
+    #answer = predict(customerInput)
+    #answer의 값을 json으로 변환
+    #분노, 슬픔, 놀람, 혐오, 상처, 당황, 불안, 기쁨, 행복, 중립
+    answer=[200,300,400,500,600,700,800,900,100,2000,300]
+    title=["anger","sad","surprise","hatred","hurt","panic","anxiety","joy","happy","neutrality","stress"]
+    #for i in range(0,10):
+       # result={'type':title[i],'score':answer[i]}
+    #print(type(result))
+    #print(result)
+    result={
+        "result":[
+            {
+            "type":title[10],
+            "score":answer[0]
+            }
+            ,
+            {
+            "type":title[1],
+            "score":answer[1]
+            }
+            ]
+        }
+    #print(type(result))
+
+    emotion = 200
+    #자바에 값을 반환
+    response=make_response(jsonify(result))
+    response.headers.add("Access-Control-Allow-Origin",	"*")
+    return response
 
 if __name__== '__main__':
     app.debug=True
