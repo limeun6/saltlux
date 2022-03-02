@@ -23,29 +23,58 @@
   <!-- Styles -->
 	<style>
 	#counselorChartdiv1 {
-	  width: 90%;
-  	  height: 180px;
-	  max-width: 100%;
+		width: 150%;
+		height:130%;
 	}
 	#customerChartdiv1 {
-	  width: 90%;
-  	  height: 180px;
-	  max-width: 100%;
+	  	width: 150%;
+		height: 130%;
 	}
 	</style>
 	
 	<!-- Resources -->
-	<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
-	<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
-	<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/series-label.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/modules/export-data.js"></script>
+	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 	
+	<script>
+		<!-- 차트용 글로벌 변수 -->
+		var counselorStressList=[0];
+		var customerStressList=[0];
+		
+		function getListFilter(data,key,value){
+			if(data.TYPE=="S"){
+				return data.result.filter(function(object){
+					console.log(object)
+					return object[key]===value;
+				})
+			}else{
+				alert(data.MESSAGE);
+				return 1000;
+			}
+		}
+		function set_chart(data){
+			tmp = data.cate_name;
+			tmp1= data.rate;
+			
+			for(var i=0; i<tmp.length; i++){
+				var data = new Object();
+				data.name = tmp[i];
+				data.y = tmp1[i]*1;
+				dataList.push(data);
+			}
+			console.log(dataList);
+		}
+	</script>
 	<!-- 비동기요청 -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script>
 	$(function(){
 		$("#customerInputBtn").click(function(){
 			// req_url = "http://localhost:5000/ai_bot"
-			req_url = "http://localhost:8080/chatting"
+			req_url = "http://localhost:5000/chatting"
 			var form = $("#form1")[0];
 			var form_data = new FormData(form);
 			var isScrollUp = false;
@@ -66,14 +95,22 @@
 				processData: false,
 				contentType: false,
 				success: function(data){
-					console.log(data)
 					question = $("input[name=customerInput]").val();
 					$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
 							"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
 							"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
 							"<div class='chat-msg-content'><div class='chat-msg-text'>"+ question +"</div></div></div>");
 					$("input[name=customerInput]").val("");
-					
+					// 스트레스값을 저장
+					console.log(getListFilter(data,'type','stress'))
+					customerStressList.push(data.result.type[0].score);
+					// 차트에 반영
+					customerChartStress.update({
+						series: [{
+							name: 'Stress',
+							data: customerStressList
+							}]
+					});
 					// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
 				    if (!isScrollUp) {
 				      $('#div_chat').animate({
@@ -94,7 +131,7 @@
 	$(function(){
 		$("#counselorInputBtn").click(function(){
 			// req_url = "http://localhost:5000/ai_bot"
-			req_url = "http://localhost:8080/chatting"
+			req_url = "http://localhost:5000/chatting"
 			var form = $("#form2")[0];
 			var form_data = new FormData(form);
 			var isScrollUp = false;
@@ -128,7 +165,15 @@
 						     "</div>"+
 						    "</div>");
 					$("input[name=counselorInput]").val("");
-					
+					// 스트레스값을 저장
+					counselorStressList.push(data.result[0].score);
+					// 차트에 반영
+					counselorChartStress.update({
+						series: [{
+							name: 'Stress',
+							data: counselorStressList
+							}]
+					});
 					// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
 				    if (!isScrollUp) {
 				      $('#div_chat').animate({
@@ -198,12 +243,14 @@
   
   <div class="detail-area">
    <div class="detail-area-header">
-    <div class="detail-title">상담사 감정상태</div>
-	<div id="counselorChartdiv1"></div>
+	<figure class="highcharts-figure">
+    	<div id="counselorChartStress"></div>
+	</figure>
    </div>
    <div class="detail-area-header">
-    <div class="detail-title">고객 감정상태</div>
-    <div id="customerChartdiv1"></div>
+    <figure class="highcharts-figure">
+    	<div id="customerChartStress"></div>
+	</figure>
    </div>
    
    <br>
@@ -223,324 +270,122 @@
 
 <!-- Chart code -->
 <script>
-am5.ready(function() {
+const counselorChartStress = Highcharts.chart('counselorChartStress', {
 
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
-var root = am5.Root.new("counselorChartdiv1");
+    title: {
+        text: '상담사감정상태'
+    },
 
+    subtitle: {
+        text: ''
+    },
 
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/ 
-root.setThemes([
-  am5themes_Animated.new(root)
-]);
+    yAxis: {
+        title: {
+            text: 'Number of Employees'
+        }
+    },
 
+    xAxis: {
+        accessibility: {
+            rangeDescription: 'Range: 2010 to 2017'
+        }
+    },
 
-// Create chart
-// https://www.amcharts.com/docs/v5/charts/xy-chart/
-var chart = root.container.children.push(am5xy.XYChart.new(root, {
-  panX: true,
-  panY: true,
-  wheelX: "panX",
-  wheelY: "zoomX",
-  maxTooltipDistance: 0
-}));
+    legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle'
+    },
 
+    plotOptions: {
+        series: {
+            label: {
+                connectorAllowed: false
+            },
+            pointStart: 1
+        }
+    },
 
-var date = new Date();
-date.setHours(0, 0, 0, 0);
-var value = 100;
+    series: [{
+        name: 'Stress',
+        data: counselorStressList
+    }],
 
-function generateData() {
-  value = Math.round((Math.random() * 10 - 4.2) + value);
-  am5.time.add(date, "day", 1);
-  return {
-    date: date.getTime(),
-    value: value
-  };
-}
-
-function generateDatas(count) {
-  var data = [];
-  for (var i = 0; i < count; ++i) {
-    data.push(generateData());
-  }
-  return data;
-}
-
-
-// Create axes
-// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.2,
-  baseInterval: {
-    timeUnit: "day",
-    count: 1
-  },
-  renderer: am5xy.AxisRendererX.new(root, {}),
-  tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  renderer: am5xy.AxisRendererY.new(root, {})
-}));
-
-
-// Add series
-// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-for (var i = 0; i < 5; i++) {
-  var series = chart.series.push(am5xy.LineSeries.new(root, {
-    name: "Series " + i,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: "value",
-    valueXField: "date",
-    legendValueText: "{valueY}",
-    tooltip: am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal",
-      labelText: "{valueY}"
-    })
-  }));
-
-  date = new Date();
-  date.setHours(0, 0, 0, 0);
-  value = 0;
-
-  var data = generateDatas(100);
-  series.data.setAll(data);
-
-  // Make stuff animate on load
-  // https://www.amcharts.com/docs/v5/concepts/animations/
-  series.appear();
-}
-
-
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-  behavior: "none"
-}));
-cursor.lineY.set("visible", false);
-
-// Add legend
-// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
-var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
-  width: 200,
-  paddingLeft: 15,
-  height: am5.percent(100)
-}));
-
-// When legend item container is hovered, dim all the series except the hovered one
-legend.itemContainers.template.events.on("pointerover", function(e) {
-  var itemContainer = e.target;
-
-  // As series list is data of a legend, dataContext is series
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    if (chartSeries != series) {
-      chartSeries.strokes.template.setAll({
-        strokeOpacity: 0.15,
-        stroke: am5.color(0x000000)
-      });
-    } else {
-      chartSeries.strokes.template.setAll({
-        strokeWidth: 3
-      });
+    responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 500
+            },
+            chartOptions: {
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                }
+            }
+        }]
     }
-  })
-})
 
-// When legend item container is unhovered, make all series as they are
-legend.itemContainers.template.events.on("pointerout", function(e) {
-  var itemContainer = e.target;
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    chartSeries.strokes.template.setAll({
-      strokeOpacity: 1,
-      strokeWidth: 1,
-      stroke: chartSeries.get("fill")
-    });
-  });
-})
-
-legend.itemContainers.template.set("width", am5.p100);
-legend.valueLabels.template.setAll({
-  width: am5.p100,
-  textAlign: "right"
 });
-
-// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
-legend.data.setAll(chart.series.values);
-
-
-// Make stuff animate on load
-// https://www.amcharts.com/docs/v5/concepts/animations/
-chart.appear(1000, 100);
-
-}); // end am5.ready()
 </script>
-
-
 <script>
-am5.ready(function() {
+const customerChartStress = Highcharts.chart('customerChartStress', {
 
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
-var root = am5.Root.new("customerChartdiv1");
+    title: {
+        text: '고객감정상태'
+    },
 
+    subtitle: {
+        text: ''
+    },
 
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/ 
-root.setThemes([
-  am5themes_Animated.new(root)
-]);
+    yAxis: {
+        title: {
+            text: 'Number of Employees'
+        }
+    },
 
+    xAxis: {
+        accessibility: {
+            rangeDescription: 'Range: 2010 to 2017'
+        }
+    },
 
-// Create chart
-// https://www.amcharts.com/docs/v5/charts/xy-chart/
-var chart = root.container.children.push(am5xy.XYChart.new(root, {
-  panX: true,
-  panY: true,
-  wheelX: "panX",
-  wheelY: "zoomX",
-  maxTooltipDistance: 0
-}));
+    legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle'
+    },
 
+    plotOptions: {
+        series: {
+            label: {
+                connectorAllowed: false
+            },
+            pointStart: 1
+        }
+    },
 
-var date = new Date();
-date.setHours(0, 0, 0, 0);
-var value = 100;
+    series: [{
+        name: 'Stress',
+        data: customerStressList
+    }],
 
-function generateData() {
-  value = Math.round((Math.random() * 10 - 4.2) + value);
-  am5.time.add(date, "day", 1);
-  return {
-    date: date.getTime(),
-    value: value
-  };
-}
-
-function generateDatas(count) {
-  var data = [];
-  for (var i = 0; i < count; ++i) {
-    data.push(generateData());
-  }
-  return data;
-}
-
-
-// Create axes
-// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.2,
-  baseInterval: {
-    timeUnit: "day",
-    count: 1
-  },
-  renderer: am5xy.AxisRendererX.new(root, {}),
-  tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  renderer: am5xy.AxisRendererY.new(root, {})
-}));
-
-
-// Add series
-// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-for (var i = 0; i < 5; i++) {
-  var series = chart.series.push(am5xy.LineSeries.new(root, {
-    name: "Series " + i,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: "value",
-    valueXField: "date",
-    legendValueText: "{valueY}",
-    tooltip: am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal",
-      labelText: "{valueY}"
-    })
-  }));
-
-  date = new Date();
-  date.setHours(0, 0, 0, 0);
-  value = 0;
-
-  var data = generateDatas(100);
-  series.data.setAll(data);
-
-  // Make stuff animate on load
-  // https://www.amcharts.com/docs/v5/concepts/animations/
-  series.appear();
-}
-
-
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-  behavior: "none"
-}));
-cursor.lineY.set("visible", false);
-
-// Add legend
-// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
-var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
-  width: 200,
-  paddingLeft: 15,
-  height: am5.percent(100)
-}));
-
-// When legend item container is hovered, dim all the series except the hovered one
-legend.itemContainers.template.events.on("pointerover", function(e) {
-  var itemContainer = e.target;
-
-  // As series list is data of a legend, dataContext is series
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    if (chartSeries != series) {
-      chartSeries.strokes.template.setAll({
-        strokeOpacity: 0.15,
-        stroke: am5.color(0x000000)
-      });
-    } else {
-      chartSeries.strokes.template.setAll({
-        strokeWidth: 3
-      });
+    responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 500
+            },
+            chartOptions: {
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                }
+            }
+        }]
     }
-  })
-})
 
-// When legend item container is unhovered, make all series as they are
-legend.itemContainers.template.events.on("pointerout", function(e) {
-  var itemContainer = e.target;
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    chartSeries.strokes.template.setAll({
-      strokeOpacity: 1,
-      strokeWidth: 1,
-      stroke: chartSeries.get("fill")
-    });
-  });
-})
-
-legend.itemContainers.template.set("width", am5.p100);
-legend.valueLabels.template.setAll({
-  width: am5.p100,
-  textAlign: "right"
 });
-
-// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
-legend.data.setAll(chart.series.values);
-
-
-// Make stuff animate on load
-// https://www.amcharts.com/docs/v5/concepts/animations/
-chart.appear(1000, 100);
-
-}); // end am5.ready()
 </script>
