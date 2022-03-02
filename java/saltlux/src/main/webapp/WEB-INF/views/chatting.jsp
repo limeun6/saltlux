@@ -102,8 +102,8 @@
 							"<div class='chat-msg-content'><div class='chat-msg-text'>"+ question +"</div></div></div>");
 					$("input[name=customerInput]").val("");
 					// 스트레스값을 저장
-					console.log(getListFilter(data,'type','stress'))
-					customerStressList.push(data.result.type[0].score);
+					//console.log(getListFilter(data,'type','stress'))
+					customerStressList.push(data.result[0].score);
 					// 차트에 반영
 					customerChartStress.update({
 						series: [{
@@ -142,7 +142,7 @@
 			var hours = now.getHours();	// 시간
 			var minutes = now.getMinutes();	// 분
 			var seconds = now.getSeconds();	// 초
-			
+
 			// 비동기요청
 			$.ajax({
 				url:req_url,
