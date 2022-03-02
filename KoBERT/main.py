@@ -9,6 +9,12 @@ import urllib.request
 import time
 import matplotlib.pyplot as plt
 import re
+#import KoBERT
+#import KoBERT.model
+import model
+#sys.path.append('absolute path')
+#from KoBERT.kobert.utils import get_tokenizer
+#from KoBERT.kobert.pytorch_kobert import get_pytorch_kobert_model
 
 app = Flask(__name__)
 
@@ -65,11 +71,14 @@ def ai_bot():
 
 @app.route("/chatting", methods=["POST"])
 def chatting():
-    #자바에서 들어온 값
-    customerInput = request.form.get('customerInput')
-    print(customerInput)
+    #자바에서 들어온 값 고객인경우와 카운셀러인 경우 둘중 하나의 값을 저장
+    InputText = request.form.get('customerInput')
+    if InputText==None:
+        InputText = request.form.get('counselorInput')
+    print(InputText)
     # 감정/감성분석결과 
-    #answer = predict(customerInput)
+    #answer=model.callmodel(InputText)
+    #print(answer)
     #answer의 값을 json으로 변환
     #분노, 슬픔, 놀람, 혐오, 상처, 당황, 불안, 기쁨, 행복, 중립
     answer=[200,300,400,500,600,700,800,900,100,2000,300]
@@ -92,8 +101,6 @@ def chatting():
             ]
         }
     #print(type(result))
-
-    emotion = 200
     #자바에 값을 반환
     response=make_response(jsonify(result))
     response.headers.add("Access-Control-Allow-Origin",	"*")
