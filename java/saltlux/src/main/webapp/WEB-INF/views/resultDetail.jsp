@@ -24,52 +24,54 @@
 	<style>
 	#EmotionSentenceChart {
 	  width: 100%;
-  	  height: 180px;
+  	  height: 280px;
 	  max-width: 100%;
 	}
 	#EmotionSingleChart {
 	  width: 100%;
-  	  height: 180px;
+  	  height: 280px;
 	  max-width: 100%;
 	}
 	#EmotionMultiChart {
 	  width: 100%;
-  	  height: 180px;
+  	  height: 280px;
 	  max-width: 100%;
 	}
 	#EmotionFinalChart {
 	  width: 100%;
-  	  height: 180px;
+  	  height: 280px;
 	  max-width: 100%;
 	}
 	#SensitivitySentenceChart {
 	  width: 100%;
-  	  height: 180px;
+  	  height: 280px;
 	  max-width: 100%;
 	}
 	#SensitivitySingleChart {
 	  width: 100%;
-  	  height: 180px;
+  	  height: 280px;
 	  max-width: 100%;
 	}
 	#SensitivityMultiChart {
 	  width: 100%;
-  	  height: 180px;
+  	  height: 280px;
 	  max-width: 100%;
 	}
 	#SensitivityFinalChart {
 	  width: 100%;
-  	  height: 180px;
+  	  height: 280px;
 	  max-width: 100%;
 	}
 	</style>
 	
-	<!-- Resources -->
-	<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
-	<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
-	<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
-	<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/series-label.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/modules/export-data.js"></script>
+	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 	
+	<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+		
 </head>
 <body>
 <!-- partial:index.partial.html -->
@@ -81,52 +83,85 @@
  </div>
  
 
-  <div class="headerTitle"> [ <%= sf1.format(nowTime) %> 감성/감정 분석 결과 ]</div>
+  <div class="headerTitle"> [ <%= sf1.format(nowTime) %> 감정/감성 분석 결과 ]</div>
   <br>
   <div class="totalresult">
   <div class="area-header-title"> 감정 상세결과 </div>
     <div class="resultContent">
- 	<div id="b1-1" class="detail-area-header" style="width: 40%; border:1px solid #38b2ac; margin:10px;">
-    	<div class="detail-title">문장별 상세결과</div>
-		<div id="EmotionSentenceChart"></div>
+    
+ 	<div id="b1-1" class="detail-area-header" style="width: 40%; margin:10px;">
+    	<div class="detail-title"></div>
+			<figure class="highcharts-figure">
+			  <div id="EmotionSentenceChart" style="border:1px solid #38b2ac;"></div>
+			  <p class="highcharts-description">
+			  </p>
+			</figure>
     </div>
  	
- 	<div id="b1-2" class="detail-area-header" style="width: 40%; border:1px solid #38b2ac; float:left; margin:10px;">
-    	<div class="detail-title">싱글턴 상세결과</div>
-		<div id="EmotionSingleChart"></div>
+ 	<div id="b1-2" class="detail-area-header" style="width: 40%; margin:10px;">
+    	<div class="detail-title"></div>
+			<figure class="highcharts-figure">
+			  <div id="EmotionSingleChart" style="border:1px solid #38b2ac;"></div>
+			  <p class="highcharts-description">
+			  </p>
+			</figure>
 	</div>
 	
-	<div id="b1-3" class="detail-area-header" style="width: 40%; border:1px solid #38b2ac; float:left; margin:10px;">
-   		<div class="detail-title">멀티턴 상세결과</div>
-		<div id="EmotionMultiChart"></div>
+	<div id="b1-3" class="detail-area-header" style="width: 40%; margin:0 10px 10px 10px;">
+   		<div class="detail-title"></div>
+			<figure class="highcharts-figure">
+			  <div id="EmotionMultiChart" style="border:1px solid #38b2ac;"></div>
+			  <p class="highcharts-description">
+			  </p>
+			</figure>
     </div>
     
-    <div id="b1-4" class="detail-area-header" style="width: 40%; border:1px solid #38b2ac; float:left; margin:10px;">
-    	<div class="detail-title">최종 상세결과</div>
-		<div id="EmotionFinalChart"></div>
+    <div id="b1-4" class="detail-area-header" style="width: 40%; margin:0 10px 10px 10px;">
+    	<div class="detail-title"></div>
+			<figure class="highcharts-figure">
+			  <div id="EmotionFinalChart" style="border:1px solid #38b2ac;"></div>
+			  <p class="highcharts-description">
+			  </p>
+			</figure>
     </div>
   </div> <!-- resultContent -->
    
    <div id="box2" class="area-header-title"> 감성 상세결과 </div>
     <div class="resultContent">
- 	<div id="b2-1" class="detail-area-header" style="width: 40%; border:1px solid #38b2ac; float:left; margin:10px;">
-	    <div class="detail-title">문장별 상세결과</div>
-		<div id="SensitivitySentenceChart"></div>
+ 	<div id="b2-1" class="detail-area-header" style="width: 40%; margin:10px;">
+	    <div class="detail-title"></div>
+			<figure class="highcharts-figure">
+			  <div id="SensitivitySentenceChart" style="border:1px solid #38b2ac;"></div>
+			  <p class="highcharts-description">
+			  </p>
+			</figure>
 	</div>
  	
- 	<div id="b2-2" class="detail-area-header" style="width: 40%; border:1px solid #38b2ac; float:left; margin:10px;">
-   		<div class="detail-title">싱글턴 상세결과</div>
-		<div id="SensitivitySingleChart"></div>
+ 	<div id="b2-2" class="detail-area-header" style="width: 40%; margin:10px;">
+   		<div class="detail-title"></div>
+			<figure class="highcharts-figure">
+			  <div id="SensitivitySingleChart" style="border:1px solid #38b2ac;"></div>
+			  <p class="highcharts-description">
+			  </p>
+			</figure>
     </div>
 	
-	<div id="b2-3" class="detail-area-header" style="width: 40%; border:1px solid #38b2ac; float:left; margin:10px;">
-   		<div class="detail-title">멀티턴 상세결과</div>
-		<div id="SensitivityMultiChart"></div>
+	<div id="b2-3" class="detail-area-header" style="width: 40%; margin:0 10px 10px 10px;">
+   		<div class="detail-title"></div>
+			<figure class="highcharts-figure">
+			  <div id="SensitivityMultiChart" style="border:1px solid #38b2ac;"></div>
+			  <p class="highcharts-description">
+			  </p>
+			</figure>
     </div>
     
-    <div id="b2-4" class="detail-area-header" style="width: 40%; border:1px solid #38b2ac; float:left; margin:10px;">
-   		<div class="detail-title">최종 상세결과</div>
-		<div id="SensitivityFinalChart"></div>
+    <div id="b2-4" class="detail-area-header" style="width: 40%; margin:0 10px 10px 10px;">
+   		<div class="detail-title"></div>
+			<figure class="highcharts-figure">
+			  <div id="SensitivityFinalChart" style="border:1px solid #38b2ac;"></div>
+			  <p class="highcharts-description">
+			  </p>
+			</figure>
     </div>
   </div> <!-- resultContent -->
   
@@ -142,1186 +177,550 @@
 <!-- Chart code -->
 <!-- 감정 문장별 상세결과 -->
 <script>
-am5.ready(function() {
+Highcharts.chart('EmotionSentenceChart', {
 
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
-var root = am5.Root.new("EmotionSentenceChart");
+	  title: {
+	    text: '문장별 상세결과'
+	  },
 
+	  subtitle: {
+	    text: ''
+	  },
 
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/ 
-root.setThemes([
-  am5themes_Animated.new(root)
-]);
+	  yAxis: {
+	    title: {
+	      text: 'Number of Employees'
+	    }
+	  },
 
+	  xAxis: {
+	    accessibility: {
+	      rangeDescription: 'Range: 2010 to 2017'
+	    }
+	  },
 
-// Create chart
-// https://www.amcharts.com/docs/v5/charts/xy-chart/
-var chart = root.container.children.push(am5xy.XYChart.new(root, {
-  panX: true,
-  panY: true,
-  wheelX: "panX",
-  wheelY: "zoomX",
-  maxTooltipDistance: 0
-}));
+	  legend: {
+	    layout: 'vertical',
+	    align: 'right',
+	    verticalAlign: 'middle'
+	  },
 
+	  plotOptions: {
+	    series: {
+	      label: {
+	        connectorAllowed: false
+	      },
+	      pointStart: 2010
+	    }
+	  },
 
-var date = new Date();
-date.setHours(0, 0, 0, 0);
-var value = 100;
+	  series: [{
+	    name: '기쁨',
+	    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+	  }, {
+	    name: '행복',
+	    data: [24916, 24064, 29742, 29851, 32490, 30282, 138121, 9434]
+	  }, {
+	    name: '중립',
+	    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+	  }, {
+	    name: '분노',
+	    data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
+	  }, {
+	    name: '슬픔',
+	    data: [12908, 5948, 8105, 11248, 89089, 11816, 18274, 18111]
+	  }, {
+		    name: '놀람',
+		    data: [12908, 5948, 8105, 1148, 28989, 11816, 15274, 181101]
+	  }, {
+		    name: '혐오',
+		    data: [9208, 5048, 6105, 11248, 18989, 11416, 1874, 18111]
+	  }, {
+		    name: '상처',
+		    data: [3908, 3148, 4805, 7248, 38989, 1816, 7274, 1111]
+	  }, {
+		    name: '당황',
+		    data: [12908, 5948, 8105, 11248, 28989, 11816, 18274, 18111]
+	  }, {
+		    name: '불안',
+		    data: [3908, 5948, 8105, 2248, 4989, 7816, 8274, 1811]
+		  }],
 
+	  responsive: {
+	    rules: [{
+	      condition: {
+	        maxWidth: 500
+	      },
+	      chartOptions: {
+	        legend: {
+	          layout: 'horizontal',
+	          align: 'center',
+	          verticalAlign: 'bottom'
+	        }
+	      }
+	    }]
+	  }
 
-function generateData() {
-  value = Math.round((Math.random() * 10 - 4.2) + value);
-  am5.time.add(date, "day", 1);
-  return {
-    date: date.getTime(),
-    value: value
-  };
-}
-
-function generateDatas(count) {
-  var data = [];
-  for (var i = 0; i < count; ++i) {
-    data.push(generateData());
-  }
-  return data;
-}
-
-// Create axes
-// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.2,
-  baseInterval: {
-    timeUnit: "day",
-    count: 1
-  },
-  renderer: am5xy.AxisRendererX.new(root, {}),
-  tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  renderer: am5xy.AxisRendererY.new(root, {})
-}));
-
-
-// Add series
-// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-for (var i = 0; i < 5; i++) {
-  var series = chart.series.push(am5xy.LineSeries.new(root, {
-    name: "Series " + i,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: "value",
-    valueXField: "date",
-    legendValueText: "{valueY}",
-    tooltip: am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal",
-      labelText: "{valueY}"
-    })
-  }));
-
-  date = new Date();
-  date.setHours(0, 0, 0, 0);
-  value = 0;
-
-  var data = generateDatas(100);
-  series.data.setAll(data);
-
-  // Make stuff animate on load
-  // https://www.amcharts.com/docs/v5/concepts/animations/
-  series.appear();
-}
-
-
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-  behavior: "none"
-}));
-cursor.lineY.set("visible", false);
-
-// Add legend
-// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
-var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
-  width: 100,
-  paddingLeft: 10,
-  height: am5.percent(100)
-}));
-
-// When legend item container is hovered, dim all the series except the hovered one
-legend.itemContainers.template.events.on("pointerover", function(e) {
-  var itemContainer = e.target;
-
-  // As series list is data of a legend, dataContext is series
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    if (chartSeries != series) {
-      chartSeries.strokes.template.setAll({
-        strokeOpacity: 0.15,
-        stroke: am5.color(0x000000)
-      });
-    } else {
-      chartSeries.strokes.template.setAll({
-        strokeWidth: 3
-      });
-    }
-  })
-})
-
-// When legend item container is unhovered, make all series as they are
-legend.itemContainers.template.events.on("pointerout", function(e) {
-  var itemContainer = e.target;
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    chartSeries.strokes.template.setAll({
-      strokeOpacity: 1,
-      strokeWidth: 1,
-      stroke: chartSeries.get("fill")
-    });
-  });
-})
-
-legend.itemContainers.template.set("width", am5.p100);
-legend.valueLabels.template.setAll({
-  width: am5.p100,
-  textAlign: "left"
-});
-
-// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
-legend.data.setAll(chart.series.values);
-
-
-// Make stuff animate on load
-// https://www.amcharts.com/docs/v5/concepts/animations/
-chart.appear(1000, 100);
-
-}); // end am5.ready()
+	});
 </script>
+
 
 <!-- 감정 싱글턴 결과 -->
 <script>
-am5.ready(function() {
+Highcharts.chart('EmotionSingleChart', {
 
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
-var root = am5.Root.new("EmotionSingleChart");
+	  title: {
+	    text: '싱글턴 상세결과'
+	  },
 
+	  subtitle: {
+	    text: ''
+	  },
 
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/ 
-root.setThemes([
-  am5themes_Animated.new(root)
-]);
+	  yAxis: {
+	    title: {
+	      text: 'Number of Employees'
+	    }
+	  },
 
+	  xAxis: {
+	    accessibility: {
+	      rangeDescription: 'Range: 2010 to 2017'
+	    }
+	  },
 
-// Create chart
-// https://www.amcharts.com/docs/v5/charts/xy-chart/
-var chart = root.container.children.push(am5xy.XYChart.new(root, {
-  panX: true,
-  panY: true,
-  wheelX: "panX",
-  wheelY: "zoomX",
-  maxTooltipDistance: 0
-}));
+	  legend: {
+	    layout: 'vertical',
+	    align: 'right',
+	    verticalAlign: 'middle'
+	  },
 
+	  plotOptions: {
+	    series: {
+	      label: {
+	        connectorAllowed: false
+	      },
+	      pointStart: 2010
+	    }
+	  },
 
-var date = new Date();
-date.setHours(0, 0, 0, 0);
-var value = 100;
+	  series: [{
+		    name: '기쁨',
+		    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+		  }, {
+		    name: '행복',
+		    data: [24916, 24064, 29742, 29851, 32490, 30282, 138121, 9434]
+		  }, {
+		    name: '중립',
+		    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+		  }, {
+		    name: '분노',
+		    data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
+		  }, {
+		    name: '슬픔',
+		    data: [12908, 5948, 8105, 11248, 89089, 11816, 18274, 18111]
+		  }, {
+			    name: '놀람',
+			    data: [12908, 5948, 8105, 1148, 28989, 11816, 15274, 181101]
+		  }, {
+			    name: '혐오',
+			    data: [9208, 5048, 6105, 11248, 18989, 11416, 1874, 18111]
+		  }, {
+			    name: '상처',
+			    data: [3908, 3148, 4805, 7248, 38989, 1816, 7274, 1111]
+		  }, {
+			    name: '당황',
+			    data: [12908, 5948, 8105, 11248, 28989, 11816, 18274, 18111]
+		  }, {
+			    name: '불안',
+			    data: [3908, 5948, 8105, 2248, 4989, 7816, 8274, 1811]
+			  }],
 
-function generateData() {
-  value = Math.round((Math.random() * 10 - 4.2) + value);
-  am5.time.add(date, "day", 1);
-  return {
-    date: date.getTime(),
-    value: value
-  };
-}
+	  responsive: {
+	    rules: [{
+	      condition: {
+	        maxWidth: 500
+	      },
+	      chartOptions: {
+	        legend: {
+	          layout: 'horizontal',
+	          align: 'center',
+	          verticalAlign: 'bottom'
+	        }
+	      }
+	    }]
+	  }
 
-function generateDatas(count) {
-  var data = [];
-  for (var i = 0; i < count; ++i) {
-    data.push(generateData());
-  }
-  return data;
-}
-
-
-// Create axes
-// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.2,
-  baseInterval: {
-    timeUnit: "day",
-    count: 1
-  },
-  renderer: am5xy.AxisRendererX.new(root, {}),
-  tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  renderer: am5xy.AxisRendererY.new(root, {})
-}));
-
-
-// Add series
-// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-for (var i = 0; i < 5; i++) {
-  var series = chart.series.push(am5xy.LineSeries.new(root, {
-    name: "Series " + i,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: "value",
-    valueXField: "date",
-    legendValueText: "{valueY}",
-    tooltip: am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal",
-      labelText: "{valueY}"
-    })
-  }));
-
-  date = new Date();
-  date.setHours(0, 0, 0, 0);
-  value = 0;
-
-  var data = generateDatas(100);
-  series.data.setAll(data);
-
-  // Make stuff animate on load
-  // https://www.amcharts.com/docs/v5/concepts/animations/
-  series.appear();
-}
-
-
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-  behavior: "none"
-}));
-cursor.lineY.set("visible", false);
-
-// Add legend
-// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
-var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
-  width: 100,
-  paddingLeft: 10,
-  height: am5.percent(100)
-}));
-
-// When legend item container is hovered, dim all the series except the hovered one
-legend.itemContainers.template.events.on("pointerover", function(e) {
-  var itemContainer = e.target;
-
-  // As series list is data of a legend, dataContext is series
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    if (chartSeries != series) {
-      chartSeries.strokes.template.setAll({
-        strokeOpacity: 0.15,
-        stroke: am5.color(0x000000)
-      });
-    } else {
-      chartSeries.strokes.template.setAll({
-        strokeWidth: 3
-      });
-    }
-  })
-})
-
-// When legend item container is unhovered, make all series as they are
-legend.itemContainers.template.events.on("pointerout", function(e) {
-  var itemContainer = e.target;
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    chartSeries.strokes.template.setAll({
-      strokeOpacity: 1,
-      strokeWidth: 1,
-      stroke: chartSeries.get("fill")
-    });
-  });
-})
-
-legend.itemContainers.template.set("width", am5.p100);
-legend.valueLabels.template.setAll({
-  width: am5.p100,
-  textAlign: "left"
-});
-
-// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
-legend.data.setAll(chart.series.values);
-
-
-// Make stuff animate on load
-// https://www.amcharts.com/docs/v5/concepts/animations/
-chart.appear(1000, 100);
-
-}); // end am5.ready()
+	});
 </script>
+
 
 <!-- 감정 멀티턴 상세결과 -->
 <script>
-am5.ready(function() {
+Highcharts.chart('EmotionMultiChart', {
 
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
-var root = am5.Root.new("EmotionMultiChart");
+	  title: {
+	    text: '멀티턴 상세결과'
+	  },
 
+	  subtitle: {
+	    text: ''
+	  },
 
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/ 
-root.setThemes([
-  am5themes_Animated.new(root)
-]);
+	  yAxis: {
+	    title: {
+	      text: 'Number of Employees'
+	    }
+	  },
 
+	  xAxis: {
+	    accessibility: {
+	      rangeDescription: 'Range: 2010 to 2017'
+	    }
+	  },
 
-// Create chart
-// https://www.amcharts.com/docs/v5/charts/xy-chart/
-var chart = root.container.children.push(am5xy.XYChart.new(root, {
-  panX: true,
-  panY: true,
-  wheelX: "panX",
-  wheelY: "zoomX",
-  maxTooltipDistance: 0
-}));
+	  legend: {
+	    layout: 'vertical',
+	    align: 'right',
+	    verticalAlign: 'middle'
+	  },
 
+	  plotOptions: {
+	    series: {
+	      label: {
+	        connectorAllowed: false
+	      },
+	      pointStart: 2010
+	    }
+	  },
 
-var date = new Date();
-date.setHours(0, 0, 0, 0);
-var value = 100;
+	  series: [{
+		    name: '기쁨',
+		    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+		  }, {
+		    name: '행복',
+		    data: [24916, 24064, 29742, 29851, 32490, 30282, 138121, 9434]
+		  }, {
+		    name: '중립',
+		    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+		  }, {
+		    name: '분노',
+		    data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
+		  }, {
+		    name: '슬픔',
+		    data: [12908, 5948, 8105, 11248, 89089, 11816, 18274, 18111]
+		  }, {
+			    name: '놀람',
+			    data: [12908, 5948, 8105, 1148, 28989, 11816, 15274, 181101]
+		  }, {
+			    name: '혐오',
+			    data: [9208, 5048, 6105, 11248, 18989, 11416, 1874, 18111]
+		  }, {
+			    name: '상처',
+			    data: [3908, 3148, 4805, 7248, 38989, 1816, 7274, 1111]
+		  }, {
+			    name: '당황',
+			    data: [12908, 5948, 8105, 11248, 28989, 11816, 18274, 18111]
+		  }, {
+			    name: '불안',
+			    data: [3908, 5948, 8105, 2248, 4989, 7816, 8274, 1811]
+			  }],
 
-function generateData() {
-  value = Math.round((Math.random() * 10 - 4.2) + value);
-  am5.time.add(date, "day", 1);
-  return {
-    date: date.getTime(),
-    value: value
-  };
-}
+	  responsive: {
+	    rules: [{
+	      condition: {
+	        maxWidth: 500
+	      },
+	      chartOptions: {
+	        legend: {
+	          layout: 'horizontal',
+	          align: 'center',
+	          verticalAlign: 'bottom'
+	        }
+	      }
+	    }]
+	  }
 
-function generateDatas(count) {
-  var data = [];
-  for (var i = 0; i < count; ++i) {
-    data.push(generateData());
-  }
-  return data;
-}
-
-
-// Create axes
-// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.2,
-  baseInterval: {
-    timeUnit: "day",
-    count: 1
-  },
-  renderer: am5xy.AxisRendererX.new(root, {}),
-  tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  renderer: am5xy.AxisRendererY.new(root, {})
-}));
-
-
-// Add series
-// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-for (var i = 0; i < 5; i++) {
-  var series = chart.series.push(am5xy.LineSeries.new(root, {
-    name: "Series " + i,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: "value",
-    valueXField: "date",
-    legendValueText: "{valueY}",
-    tooltip: am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal",
-      labelText: "{valueY}"
-    })
-  }));
-
-  date = new Date();
-  date.setHours(0, 0, 0, 0);
-  value = 0;
-
-  var data = generateDatas(100);
-  series.data.setAll(data);
-
-  // Make stuff animate on load
-  // https://www.amcharts.com/docs/v5/concepts/animations/
-  series.appear();
-}
-
-
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-  behavior: "none"
-}));
-cursor.lineY.set("visible", false);
-
-// Add legend
-// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
-var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
-  width: 100,
-  paddingLeft: 10,
-  height: am5.percent(100)
-}));
-
-// When legend item container is hovered, dim all the series except the hovered one
-legend.itemContainers.template.events.on("pointerover", function(e) {
-  var itemContainer = e.target;
-
-  // As series list is data of a legend, dataContext is series
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    if (chartSeries != series) {
-      chartSeries.strokes.template.setAll({
-        strokeOpacity: 0.15,
-        stroke: am5.color(0x000000)
-      });
-    } else {
-      chartSeries.strokes.template.setAll({
-        strokeWidth: 3
-      });
-    }
-  })
-})
-
-// When legend item container is unhovered, make all series as they are
-legend.itemContainers.template.events.on("pointerout", function(e) {
-  var itemContainer = e.target;
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    chartSeries.strokes.template.setAll({
-      strokeOpacity: 1,
-      strokeWidth: 1,
-      stroke: chartSeries.get("fill")
-    });
-  });
-})
-
-legend.itemContainers.template.set("width", am5.p100);
-legend.valueLabels.template.setAll({
-  width: am5.p100,
-  textAlign: "left"
-});
-
-// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
-legend.data.setAll(chart.series.values);
-
-
-// Make stuff animate on load
-// https://www.amcharts.com/docs/v5/concepts/animations/
-chart.appear(1000, 100);
-
-}); // end am5.ready()
+	});
 </script>
+
 
 <!-- 감정 최종 상세결과 -->
 <script>
-am5.ready(function() {
-	
-//Create root element
-//https://www.amcharts.com/docs/v5/getting-started/#Root_element
-var root = am5.Root.new("EmotionFinalChart");
-
-//Set themes
-//https://www.amcharts.com/docs/v5/concepts/themes/
-root.setThemes([
-am5themes_Animated.new(root)
-]);
-
-//Generate and set data
-//https://www.amcharts.com/docs/v5/charts/radar-chart/#Setting_data
-var cat = -1;
-var value = 10;
-
-function generateData() {
-value = Math.round(Math.random() * 10);
-cat++;
-return {
- category: "cat" + cat,
- value: value
-};
-}
-
-function generateDatas(count) {
-cat = -1;
-var data = [];
-for (var i = 0; i < count; ++i) {
- data.push(generateData());
-}
-return data;
-}
-
-//Create chart
-//https://www.amcharts.com/docs/v5/charts/radar-chart/
-var chart = root.container.children.push(am5radar.RadarChart.new(root, {
-panX: false,
-panY: false,
-wheelX: "panX",
-wheelY: "zoomX"
-}));
-
-//Add cursor
-//https://www.amcharts.com/docs/v5/charts/radar-chart/#Cursor
-var cursor = chart.set("cursor", am5radar.RadarCursor.new(root, {
-behavior: "zoomX"
-}));
-
-cursor.lineY.set("visible", false);
-
-//Create axes and their renderers
-//https://www.amcharts.com/docs/v5/charts/radar-chart/#Adding_axes
-var xRenderer = am5radar.AxisRendererCircular.new(root, {});
-xRenderer.labels.template.setAll({
-radius: 10
+Highcharts.chart('EmotionFinalChart', {
+  chart: {
+    type: 'pie',
+    options3d: {
+      enabled: true,
+      alpha: 45
+    }
+  },
+  title: {
+    text: '최종 상세결과'
+  },
+  subtitle: {
+    text: ''
+  },
+  plotOptions: {
+    pie: {
+      innerSize: 100,
+      depth: 45
+    }
+  },
+  series: [{
+    name: 'Delivered amount',
+    data: [
+      ['기쁨', 8],
+      ['행복', 3],
+      ['중립', 5],
+      ['분노', 6],
+      ['슬픔', 8],
+      ['놀람', 4],
+      ['혐오', 4],
+      ['상처', 1],
+      ['당황', 1],
+      ['불안', 2]
+    ]
+  }]
 });
-
-var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-maxDeviation: 0,
-categoryField: "category",
-renderer: xRenderer,
-tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-renderer: am5radar.AxisRendererRadial.new(root, {})
-}));
-
-//Create series
-//https://www.amcharts.com/docs/v5/charts/radar-chart/#Adding_series
-for (var i = 0; i < 4; i++) {
-var series = chart.series.push(am5radar.RadarColumnSeries.new(root, {
- stacked: true,
- name: "Series " + i,
- xAxis: xAxis,
- yAxis: yAxis,
- valueYField: "value",
- categoryXField: "category"
-}));
-
-series.columns.template.setAll({
- tooltipText: "{name}: {valueY}"
-});
-
-series.data.setAll(generateDatas(8));
-
-series.appear(1000);
-}
-
-//Add scrollbars
-chart.set("scrollbarX", am5.Scrollbar.new(root, { orientation: "horizontal" }));
-chart.set("scrollbarY", am5.Scrollbar.new(root, { orientation: "vertical" }));
-
-var data = generateDatas(8);
-xAxis.data.setAll(data);
-
-//Animate chart
-//https://www.amcharts.com/docs/v5/concepts/animations/#Initial_animation
-chart.appear(1000, 100);
-
-}); // end am5.ready()
 </script>
+
 
 <!-- 감성 문장별 상세결과 -->
 <script>
-am5.ready(function() {
+Highcharts.chart('SensitivitySentenceChart', {
 
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
-var root = am5.Root.new("SensitivitySentenceChart");
+	  title: {
+	    text: '문장별 상세결과'
+	  },
 
+	  subtitle: {
+	    text: ''
+	  },
 
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/ 
-root.setThemes([
-  am5themes_Animated.new(root)
-]);
+	  yAxis: {
+	    title: {
+	      text: 'Number of Employees'
+	    }
+	  },
 
+	  xAxis: {
+	    accessibility: {
+	      rangeDescription: 'Range: 2010 to 2017'
+	    }
+	  },
 
-// Create chart
-// https://www.amcharts.com/docs/v5/charts/xy-chart/
-var chart = root.container.children.push(am5xy.XYChart.new(root, {
-  panX: true,
-  panY: true,
-  wheelX: "panX",
-  wheelY: "zoomX",
-  maxTooltipDistance: 0
-}));
+	  legend: {
+	    layout: 'vertical',
+	    align: 'right',
+	    verticalAlign: 'middle'
+	  },
 
+	  plotOptions: {
+	    series: {
+	      label: {
+	        connectorAllowed: false
+	      },
+	      pointStart: 2010
+	    }
+	  },
 
-var date = new Date();
-date.setHours(0, 0, 0, 0);
-var value = 100;
+	  series: [{
+	    name: '긍정',
+	    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+	  }, {
+	    name: '부정',
+	    data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
+	  }, {
+	    name: '중립',
+	    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+	  }],
 
-function generateData() {
-  value = Math.round((Math.random() * 10 - 4.2) + value);
-  am5.time.add(date, "day", 1);
-  return {
-    date: date.getTime(),
-    value: value
-  };
-}
+	  responsive: {
+	    rules: [{
+	      condition: {
+	        maxWidth: 500
+	      },
+	      chartOptions: {
+	        legend: {
+	          layout: 'horizontal',
+	          align: 'center',
+	          verticalAlign: 'bottom'
+	        }
+	      }
+	    }]
+	  }
 
-function generateDatas(count) {
-  var data = [];
-  for (var i = 0; i < count; ++i) {
-    data.push(generateData());
-  }
-  return data;
-}
-
-
-// Create axes
-// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.2,
-  baseInterval: {
-    timeUnit: "day",
-    count: 1
-  },
-  renderer: am5xy.AxisRendererX.new(root, {}),
-  tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  renderer: am5xy.AxisRendererY.new(root, {})
-}));
-
-
-// Add series
-// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-for (var i = 0; i < 5; i++) {
-  var series = chart.series.push(am5xy.LineSeries.new(root, {
-    name: "Series " + i,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: "value",
-    valueXField: "date",
-    legendValueText: "{valueY}",
-    tooltip: am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal",
-      labelText: "{valueY}"
-    })
-  }));
-
-  date = new Date();
-  date.setHours(0, 0, 0, 0);
-  value = 0;
-
-  var data = generateDatas(100);
-  series.data.setAll(data);
-
-  // Make stuff animate on load
-  // https://www.amcharts.com/docs/v5/concepts/animations/
-  series.appear();
-}
-
-
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-  behavior: "none"
-}));
-cursor.lineY.set("visible", false);
-
-// Add legend
-// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
-var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
-  width: 100,
-  paddingLeft: 10,
-  height: am5.percent(100)
-}));
-
-// When legend item container is hovered, dim all the series except the hovered one
-legend.itemContainers.template.events.on("pointerover", function(e) {
-  var itemContainer = e.target;
-
-  // As series list is data of a legend, dataContext is series
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    if (chartSeries != series) {
-      chartSeries.strokes.template.setAll({
-        strokeOpacity: 0.15,
-        stroke: am5.color(0x000000)
-      });
-    } else {
-      chartSeries.strokes.template.setAll({
-        strokeWidth: 3
-      });
-    }
-  })
-})
-
-// When legend item container is unhovered, make all series as they are
-legend.itemContainers.template.events.on("pointerout", function(e) {
-  var itemContainer = e.target;
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    chartSeries.strokes.template.setAll({
-      strokeOpacity: 1,
-      strokeWidth: 1,
-      stroke: chartSeries.get("fill")
-    });
-  });
-})
-
-legend.itemContainers.template.set("width", am5.p100);
-legend.valueLabels.template.setAll({
-  width: am5.p100,
-  textAlign: "left"
-});
-
-// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
-legend.data.setAll(chart.series.values);
-
-
-// Make stuff animate on load
-// https://www.amcharts.com/docs/v5/concepts/animations/
-chart.appear(1000, 100);
-
-}); // end am5.ready()
+	});
 </script>
+
 
 <!-- 감성 싱글턴 상세결과 -->
 <script>
-am5.ready(function() {
+Highcharts.chart('SensitivitySingleChart', {
 
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
-var root = am5.Root.new("SensitivitySingleChart");
+	  title: {
+	    text: '싱글턴 상세결과'
+	  },
 
+	  subtitle: {
+	    text: ''
+	  },
 
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/ 
-root.setThemes([
-  am5themes_Animated.new(root)
-]);
+	  yAxis: {
+	    title: {
+	      text: 'Number of Employees'
+	    }
+	  },
 
+	  xAxis: {
+	    accessibility: {
+	      rangeDescription: 'Range: 2010 to 2017'
+	    }
+	  },
 
-// Create chart
-// https://www.amcharts.com/docs/v5/charts/xy-chart/
-var chart = root.container.children.push(am5xy.XYChart.new(root, {
-  panX: true,
-  panY: true,
-  wheelX: "panX",
-  wheelY: "zoomX",
-  maxTooltipDistance: 0
-}));
+	  legend: {
+	    layout: 'vertical',
+	    align: 'right',
+	    verticalAlign: 'middle'
+	  },
 
+	  plotOptions: {
+	    series: {
+	      label: {
+	        connectorAllowed: false
+	      },
+	      pointStart: 2010
+	    }
+	  },
 
-var date = new Date();
-date.setHours(0, 0, 0, 0);
-var value = 100;
+	  series: [{
+		    name: '긍정',
+		    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+		  }, {
+		    name: '부정',
+		    data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
+		  }, {
+		    name: '중립',
+		    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+		  }],
+		  
+	  responsive: {
+	    rules: [{
+	      condition: {
+	        maxWidth: 500
+	      },
+	      chartOptions: {
+	        legend: {
+	          layout: 'horizontal',
+	          align: 'center',
+	          verticalAlign: 'bottom'
+	        }
+	      }
+	    }]
+	  }
 
-function generateData() {
-  value = Math.round((Math.random() * 10 - 4.2) + value);
-  am5.time.add(date, "day", 1);
-  return {
-    date: date.getTime(),
-    value: value
-  };
-}
-
-function generateDatas(count) {
-  var data = [];
-  for (var i = 0; i < count; ++i) {
-    data.push(generateData());
-  }
-  return data;
-}
-
-
-// Create axes
-// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.2,
-  baseInterval: {
-    timeUnit: "day",
-    count: 1
-  },
-  renderer: am5xy.AxisRendererX.new(root, {}),
-  tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  renderer: am5xy.AxisRendererY.new(root, {})
-}));
-
-
-// Add series
-// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-for (var i = 0; i < 5; i++) {
-  var series = chart.series.push(am5xy.LineSeries.new(root, {
-    name: "Series " + i,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: "value",
-    valueXField: "date",
-    legendValueText: "{valueY}",
-    tooltip: am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal",
-      labelText: "{valueY}"
-    })
-  }));
-
-  date = new Date();
-  date.setHours(0, 0, 0, 0);
-  value = 0;
-
-  var data = generateDatas(100);
-  series.data.setAll(data);
-
-  // Make stuff animate on load
-  // https://www.amcharts.com/docs/v5/concepts/animations/
-  series.appear();
-}
-
-
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-  behavior: "none"
-}));
-cursor.lineY.set("visible", false);
-
-// Add legend
-// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
-var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
-  width: 100,
-  paddingLeft: 10,
-  height: am5.percent(100)
-}));
-
-// When legend item container is hovered, dim all the series except the hovered one
-legend.itemContainers.template.events.on("pointerover", function(e) {
-  var itemContainer = e.target;
-
-  // As series list is data of a legend, dataContext is series
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    if (chartSeries != series) {
-      chartSeries.strokes.template.setAll({
-        strokeOpacity: 0.15,
-        stroke: am5.color(0x000000)
-      });
-    } else {
-      chartSeries.strokes.template.setAll({
-        strokeWidth: 3
-      });
-    }
-  })
-})
-
-// When legend item container is unhovered, make all series as they are
-legend.itemContainers.template.events.on("pointerout", function(e) {
-  var itemContainer = e.target;
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    chartSeries.strokes.template.setAll({
-      strokeOpacity: 1,
-      strokeWidth: 1,
-      stroke: chartSeries.get("fill")
-    });
-  });
-})
-
-legend.itemContainers.template.set("width", am5.p100);
-legend.valueLabels.template.setAll({
-  width: am5.p100,
-  textAlign: "left"
-});
-
-// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
-legend.data.setAll(chart.series.values);
-
-
-// Make stuff animate on load
-// https://www.amcharts.com/docs/v5/concepts/animations/
-chart.appear(1000, 100);
-
-}); // end am5.ready()
+	});
 </script>
+
 
 <!-- 감성 멀티턴 상세결과 -->
 <script>
-am5.ready(function() {
+Highcharts.chart('SensitivityMultiChart', {
 
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element 
-var root = am5.Root.new("SensitivityMultiChart");
+	  title: {
+	    text: '멀티턴 상세결과'
+	  },
 
+	  subtitle: {
+	    text: ''
+	  },
 
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/ 
-root.setThemes([
-  am5themes_Animated.new(root)
-]);
+	  yAxis: {
+	    title: {
+	      text: 'Number of Employees'
+	    }
+	  },
 
+	  xAxis: {
+	    accessibility: {
+	      rangeDescription: 'Range: 2010 to 2017'
+	    }
+	  },
 
-// Create chart
-// https://www.amcharts.com/docs/v5/charts/xy-chart/
-var chart = root.container.children.push(am5xy.XYChart.new(root, {
-  panX: true,
-  panY: true,
-  wheelX: "panX",
-  wheelY: "zoomX",
-  maxTooltipDistance: 0
-}));
+	  legend: {
+	    layout: 'vertical',
+	    align: 'right',
+	    verticalAlign: 'middle'
+	  },
 
+	  plotOptions: {
+	    series: {
+	      label: {
+	        connectorAllowed: false
+	      },
+	      pointStart: 2010
+	    }
+	  },
 
-var date = new Date();
-date.setHours(0, 0, 0, 0);
-var value = 100;
+	  series: [{
+		    name: '긍정',
+		    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+		  }, {
+		    name: '부정',
+		    data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
+		  }, {
+		    name: '중립',
+		    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+		  }],
 
-function generateData() {
-  value = Math.round((Math.random() * 10 - 4.2) + value);
-  am5.time.add(date, "day", 1);
-  return {
-    date: date.getTime(),
-    value: value
-  };
-}
+	  responsive: {
+	    rules: [{
+	      condition: {
+	        maxWidth: 500
+	      },
+	      chartOptions: {
+	        legend: {
+	          layout: 'horizontal',
+	          align: 'center',
+	          verticalAlign: 'bottom'
+	        }
+	      }
+	    }]
+	  }
 
-function generateDatas(count) {
-  var data = [];
-  for (var i = 0; i < count; ++i) {
-    data.push(generateData());
-  }
-  return data;
-}
-
-
-// Create axes
-// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-  maxDeviation: 0.2,
-  baseInterval: {
-    timeUnit: "day",
-    count: 1
-  },
-  renderer: am5xy.AxisRendererX.new(root, {}),
-  tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  renderer: am5xy.AxisRendererY.new(root, {})
-}));
-
-
-// Add series
-// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-for (var i = 0; i < 5; i++) {
-  var series = chart.series.push(am5xy.LineSeries.new(root, {
-    name: "Series " + i,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: "value",
-    valueXField: "date",
-    legendValueText: "{valueY}",
-    tooltip: am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal",
-      labelText: "{valueY}"
-    })
-  }));
-
-  date = new Date();
-  date.setHours(0, 0, 0, 0);
-  value = 0;
-
-  var data = generateDatas(100);
-  series.data.setAll(data);
-
-  // Make stuff animate on load
-  // https://www.amcharts.com/docs/v5/concepts/animations/
-  series.appear();
-}
-
-
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-  behavior: "none"
-}));
-cursor.lineY.set("visible", false);
-
-// Add legend
-// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
-var legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, {
-  width: 100,
-  paddingLeft: 10,
-  height: am5.percent(100)
-}));
-
-// When legend item container is hovered, dim all the series except the hovered one
-legend.itemContainers.template.events.on("pointerover", function(e) {
-  var itemContainer = e.target;
-
-  // As series list is data of a legend, dataContext is series
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    if (chartSeries != series) {
-      chartSeries.strokes.template.setAll({
-        strokeOpacity: 0.15,
-        stroke: am5.color(0x000000)
-      });
-    } else {
-      chartSeries.strokes.template.setAll({
-        strokeWidth: 3
-      });
-    }
-  })
-})
-
-// When legend item container is unhovered, make all series as they are
-legend.itemContainers.template.events.on("pointerout", function(e) {
-  var itemContainer = e.target;
-  var series = itemContainer.dataItem.dataContext;
-
-  chart.series.each(function(chartSeries) {
-    chartSeries.strokes.template.setAll({
-      strokeOpacity: 1,
-      strokeWidth: 1,
-      stroke: chartSeries.get("fill")
-    });
-  });
-})
-
-legend.itemContainers.template.set("width", am5.p100);
-legend.valueLabels.template.setAll({
-  width: am5.p100,
-  textAlign: "left"
-});
-
-// It's is important to set legend data after all the events are set on template, otherwise events won't be copied
-legend.data.setAll(chart.series.values);
-
-
-// Make stuff animate on load
-// https://www.amcharts.com/docs/v5/concepts/animations/
-chart.appear(1000, 100);
-
-}); // end am5.ready()
+	});
 </script>
 
 <!--  감성 최종 상세결과 -->
 <script>
-am5.ready(function() {
-
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element
-var root = am5.Root.new("SensitivityFinalChart");
-
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/
-root.setThemes([
-  am5themes_Animated.new(root)
-]);
-
-// Generate and set data
-// https://www.amcharts.com/docs/v5/charts/radar-chart/#Setting_data
-var cat = -1;
-var value = 10;
-
-function generateData() {
-  value = Math.round(Math.random() * 10);
-  cat++;
-  return {
-    category: "cat" + cat,
-    value: value
-  };
-}
-
-function generateDatas(count) {
-  cat = -1;
-  var data = [];
-  for (var i = 0; i < count; ++i) {
-    data.push(generateData());
-  }
-  return data;
-}
-
-// Create chart
-// https://www.amcharts.com/docs/v5/charts/radar-chart/
-var chart = root.container.children.push(am5radar.RadarChart.new(root, {
-  panX: false,
-  panY: false,
-  wheelX: "panX",
-  wheelY: "zoomX"
-}));
-
-// Add cursor
-// https://www.amcharts.com/docs/v5/charts/radar-chart/#Cursor
-var cursor = chart.set("cursor", am5radar.RadarCursor.new(root, {
-  behavior: "zoomX"
-}));
-
-cursor.lineY.set("visible", false);
-
-// Create axes and their renderers
-// https://www.amcharts.com/docs/v5/charts/radar-chart/#Adding_axes
-var xRenderer = am5radar.AxisRendererCircular.new(root, {});
-xRenderer.labels.template.setAll({
-  radius: 10
+Highcharts.chart('SensitivityFinalChart', {
+  chart: {
+    type: 'pie',
+    options3d: {
+      enabled: true,
+      alpha: 45
+    }
+  },
+  title: {
+    text: '최종 상세결과'
+  },
+  subtitle: {
+    text: ''
+  },
+  plotOptions: {
+    pie: {
+      innerSize: 100,
+      depth: 45
+    }
+  },
+  series: [{
+    name: 'Delivered amount',
+    data: [
+      ['긍정', 8],
+      ['부정', 3],
+      ['중립', 10]
+    ]
+  }]
 });
-
-var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-  maxDeviation: 0,
-  categoryField: "category",
-  renderer: xRenderer,
-  tooltip: am5.Tooltip.new(root, {})
-}));
-
-var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-  renderer: am5radar.AxisRendererRadial.new(root, {})
-}));
-
-// Create series
-// https://www.amcharts.com/docs/v5/charts/radar-chart/#Adding_series
-for (var i = 0; i < 4; i++) {
-  var series = chart.series.push(am5radar.RadarColumnSeries.new(root, {
-    stacked: true,
-    name: "Series " + i,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: "value",
-    categoryXField: "category"
-  }));
-
-  series.columns.template.setAll({
-    tooltipText: "{name}: {valueY}"
-  });
-
-  series.data.setAll(generateDatas(8));
-  
-  series.appear(1000);
-}
-
-// Add scrollbars
-chart.set("scrollbarX", am5.Scrollbar.new(root, { orientation: "horizontal" }));
-chart.set("scrollbarY", am5.Scrollbar.new(root, { orientation: "vertical" }));
-
-var data = generateDatas(8);
-xAxis.data.setAll(data);
-
-// Animate chart
-// https://www.amcharts.com/docs/v5/concepts/animations/#Initial_animation
-chart.appear(1000, 100);
-
-}); // end am5.ready()
 </script>
