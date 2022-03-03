@@ -5,7 +5,9 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import gluonnlp as nlp
 import numpy as np
+import time
 
+start = time.time()
 ## Setting parameters
 max_len = 40
 batch_size = 32
@@ -21,7 +23,7 @@ class BERTClassifier(nn.Module):
     def __init__(self,
                  bert,
                  hidden_size = 768,
-                 num_classes=3,
+                 num_classes=0,
                 dr_rate=None,
                 params=None):
         super(BERTClassifier, self).__init__()
@@ -62,22 +64,34 @@ class BERTDataset(Dataset):
         return (len(self.labels))
 tokenizer = get_tokenizer()
 tok = nlp.data.BERTSPTokenizer(tokenizer, vocab, lower=False)
-def callmodel(sentence):
-    path = "sentiment.pt"
 
-    emotion_model2 = BERTClassifier(bertmodel, dr_rate=0.5).to()
-    emotion_model2.load_state_dict(torch.load(path))
+"""
+모델 실행
+sentece : str : 입력할 문장
+model : str:모델 웨이트값 저장된 "파일명.확장자"
+count : 예측값의 라벨갯수
+return : tensor : 결과값
+"""
+def callmodel(sentence,model,count):
+    emotion_model2 = BERTClassifier(bertmodel, dr_rate=0.5, num_classes=count).to()
+    emotion_model2.load_state_dict(torch.load(model))
     emotion_model2.eval()
     
     return predict(sentence,emotion_model2)
 
+"""
+모델 실행
+sentece : str : 입력할 문장
+model : 불러온 모델
+result : tensor : 결과값
+"""
 def predict(predict_sentence,model):
 
     data = [predict_sentence, '0']
     dataset_another = [data]
-
-    another_test = BERTDataset(dataset_another, 0, 1, tok, 150, True, False)
-    test_dataloader = torch.utils.data.DataLoader(another_test, batch_size=batch_size, num_workers=5)
+    another_test = BERTDataset(dataset_another, 0, 1, tok, len(predict_sentence), True, False)
+    #num_workers값 수정(전체 반복횟수), num_workers=0으로 변경
+    test_dataloader = torch.utils.data.DataLoader(another_test, batch_size=batch_size)
     #print(another_test[0])
     model.eval()
 
@@ -91,22 +105,8 @@ def predict(predict_sentence,model):
         out = model(token_ids, valid_length, segment_ids)
 
         test_eval = []
-        for i in out:
-            logits = i
-            logits = logits.detach().cpu().numpy()
-
-            if np.argmax(logits) == 0:
-                test_eval.append("긍정")
-            elif np.argmax(logits) == 1:
-                test_eval.append("부정")
-            elif np.argmax(logits) == 2:
-                test_eval.append("중립")
-
-
-        print(">> 입력하신 내용에서 " + test_eval[0] + " 느껴집니다.")
-        print(logits)
-        print(type(logits))
-
-    print(torch.nn.functional.softmax(out, dim=1)[0])
-    print(str(logits))
-    return logits
+    
+    print(torch.nn.functional.softmax(out, dim=1))
+    result=torch.nn.functional.softmax(out, dim=1)[0]
+    print("time : ", time.time() - start) 
+    return result

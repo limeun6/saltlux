@@ -9,12 +9,28 @@ import urllib.request
 import time
 import matplotlib.pyplot as plt
 import re
+import json
+from collections import OrderedDict
+import calculation
 #import KoBERT
 #import KoBERT.model
 import model
+import torch
 #sys.path.append('absolute path')
 #from KoBERT.kobert.utils import get_tokenizer
 #from KoBERT.kobert.pytorch_kobert import get_pytorch_kobert_model
+
+
+# 전역함수 정의
+sentimentModel="sentiment.pt"
+sentimentCount=3
+emotionModel="emotion5.pt"
+emotionCount=10
+
+# 고객/상담사가 입력한 값을 일시저장
+stackSentence=""
+customerSentence=""
+counselorSentence = ""
 
 app = Flask(__name__)
 
@@ -22,89 +38,97 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-
-@app.route('/test1', methods=['GET','POST'])
-def rest_api_test1():
-    print(request.method)
-    data={'0':'0.01','1':'0.99' }
-    if request.method =='GET':
-        param = request.args.get('data')
-        print(param)
-        data.update({'param':param})
-
-    elif request.method =='POST':
-        param = request.form.get('data')
-        print(param)
-        f= request.files['file']
-        f.save(f.filename)
-        data.update({'param': param, 'file':f.filename})
-
-    response= make_response(jsonify(data))
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return jsonify(data)
-
-
-@app.route('/test_img',	methods=['POST'])
-def rest_img_test():
-    param=request.form.get('data')
-    print(param)
-    f=request.files['file']
-    filestr	=f.read()
-    npimg=np.fromstring(filestr,np.uint8)
-    img = cv2.imdecode(npimg,cv2.IMREAD_COLOR)
-    img_gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(f.filename,	img_gray)
-    img_str	=base64.b64encode(cv2.imencode('.jpg',img_gray)[1]).decode()
-    data={"param":param,"file":img_str}
-    response=make_response(jsonify(data))
-    response.headers.add("Access-Control-Allow-Origin",	"*")
-    return response
-
-
-@app.route("/ai_bot", methods=["POST"])
-def ai_bot():
-    question = request.form.get('question')
-    answer= predict(question)
-    response=make_response(jsonify(answer))
-    response.headers.add("Access-Control-Allow-Origin",	"*")
-    return response
-
+"""
+입력된 값을 처리
+customerInput : 고객입력값
+counselorInput : 상담사입력값
+response : json : java에 반환할 json
+"""
 @app.route("/chatting", methods=["POST"])
 def chatting():
+    # 고객의 경우 0, 상담사의 경우 1 을 반환
+    InputSelection=0
+    global stackSentence
+    global customerSentence
+    global counselorSentence
+
     #자바에서 들어온 값 고객인경우와 카운셀러인 경우 둘중 하나의 값을 저장
     InputText = request.form.get('customerInput')
     if InputText==None:
         InputText = request.form.get('counselorInput')
-    print(InputText)
-    # 감정/감성분석결과 
-    #answer=model.callmodel(InputText)
-    #print(answer)
-    #answer의 값을 json으로 변환
-    #분노, 슬픔, 놀람, 혐오, 상처, 당황, 불안, 기쁨, 행복, 중립
-    answer=[200,300,400,500,600,700,800,900,100,2000,300]
-    title=["anger","sad","surprise","hatred","hurt","panic","anxiety","joy","happy","neutrality","stress"]
-    #for i in range(0,10):
-       # result={'type':title[i],'score':answer[i]}
-    #print(type(result))
-    #print(result)
-    result={
-        "result":[
-            {
-            "type":title[10],
-            "score":answer[0]
-            }
-            ,
-            {
-            "type":title[1],
-            "score":answer[1]
-            }
-            ]
-        }
-    #print(type(result))
+        InputSelection=1
+        counselorSentence=InputText
+        InputText = calculation.beforSentence(InputText)
+    else :
+        InputSelection=0
+        customerSentence=InputText
+        InputText = calculation.beforSentence(InputText)
+    
+    if(InputSelection==0):
+        # 싱글턴입력값
+        singleSentence=counselorSentence+" "+customerSentence
+    # 멀티턴입력값
+    stackSentence=stackSentence+" "+InputText    
+    
+    print(stackSentence)
+    
+    # 감성분석결과,결과값3개(p긍정,n부정,m중립)
+    sentimentAnswer=model.callmodel(InputText,sentimentModel,sentimentCount)
+    multiturnSentimentAnswer=model.callmodel(stackSentence,sentimentModel,sentimentCount)
+    # 감정분석결과,결과값10개(분노, 슬픔, 놀람, 혐오, 상처, 당황, 불안, 기쁨, 행복, 중립)
+    emotionAnswer=model.callmodel(InputText,emotionModel,emotionCount)
+    multiturnEmotionAnswer=model.callmodel(stackSentence,emotionModel,emotionCount)
+    # 대화의 한턴이 끝났을 때 싱글턴과 멀티턴 결과를 출력
+    if(InputSelection==0):
+        singleSentenceSentimentAnswer=model.callmodel(singleSentence,sentimentModel,sentimentCount)
+        multiturnSentimentAnswer=model.callmodel(stackSentence,sentimentModel,sentimentCount)
+        singleSentenceEmotionAnswer=model.callmodel(singleSentence,emotionModel,emotionCount)
+        multiturnEmotionAnswer=model.callmodel(stackSentence,emotionModel,emotionCount)
+        print(singleSentenceSentimentAnswer)
+        print(multiturnSentimentAnswer)
+        print(singleSentenceEmotionAnswer)
+        print(multiturnEmotionAnswer)
+
+    #Json으로 값을 정리
+    result = makeJson(sentimentAnswer,emotionAnswer)
+    
     #자바에 값을 반환
-    response=make_response(jsonify(result))
+    response=make_response(result)
     response.headers.add("Access-Control-Allow-Origin",	"*")
     return response
+
+"""
+모델에서 출력된 결과 값으로 Json생성
+sentimentList : tensor : 감성 모델의 결과값
+emotionList : tensor : 감정 모델의 결과값
+result : json : java에 반환할 json
+"""
+def makeJson(sentimentList, emotionList):
+    #tensor를 list 로 변환
+    sentimentAnswerList=sentimentList.tolist()
+    emotionAnswerList=emotionList.tolist()
+    file_data = OrderedDict()
+    sentimentdic={}
+    emotiondic={}
+    emotion=["anger","sad","surprise","hatred","hurt","panic","anxiety","joy","happy","neutrality"]
+    sentiment=["positive","negative","middle"]
+    
+    #emotion을 딕셔너리화
+    for i in range(0,len(emotionAnswerList)):
+        emotiondic[emotion[i]]=emotionAnswerList[i]
+    
+    #sentiment 딕셔너리화
+    for i in range(0,len(sentimentAnswerList)):
+        sentimentdic[sentiment[i]]=sentimentAnswerList[i]
+
+    #Json으로 변환
+    file_data["emotion"]=emotiondic
+    file_data["sentiment"]=sentimentdic
+    file_data["Stress"]=round(float(calculation.stress_score(emotionList, sentimentList)),2)
+    
+    result=json.dumps(file_data,ensure_ascii=False).encode('utf8')
+    print(json.dumps(file_data,ensure_ascii=False).encode('utf8'))
+    return result
 
 if __name__== '__main__':
     app.debug=True
