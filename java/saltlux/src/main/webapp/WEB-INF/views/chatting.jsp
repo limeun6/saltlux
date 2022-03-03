@@ -22,13 +22,15 @@
   <!-- amcharts : Comparing Different Date Values Google Analytics Style -->
   <!-- Styles -->
 	<style>
-	#counselorChartdiv1 {
-		width: 150%;
-		height:130%;
+	#counselorChartStress {
+	  width: 100%;
+  	  height: 230px;
+	  max-width: 100%;
 	}
-	#customerChartdiv1 {
-	  	width: 150%;
-		height: 130%;
+	#customerChartStress {
+	  width: 100%;
+  	  height: 230px;
+	  max-width: 100%;
 	}
 	</style>
 	
@@ -202,13 +204,6 @@
  <div class="header">
     <h1><a href="/" style="font-size: 30px; margin: 0; line-height: 1; font-weight: 400; letter-spacing: 2px; color: #5777ba;
   text-decoration: none;">three jo</a></h1> 
-  <div class="user-settings">
-   <div class="dark-light">
-    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" /></svg>
-   </div>
-   
-  </div>
  </div>
  <div class="wrapper">
   <div class="chat-area">
@@ -273,7 +268,7 @@
 const counselorChartStress = Highcharts.chart('counselorChartStress', {
 
     title: {
-        text: '상담사감정상태'
+        text: '상담사 스트레스 지수'
     },
 
     subtitle: {
@@ -282,7 +277,7 @@ const counselorChartStress = Highcharts.chart('counselorChartStress', {
 
     yAxis: {
         title: {
-            text: 'Number of Employees'
+            text: '스트레스 지수'
         }
     },
 
@@ -333,7 +328,7 @@ const counselorChartStress = Highcharts.chart('counselorChartStress', {
 const customerChartStress = Highcharts.chart('customerChartStress', {
 
     title: {
-        text: '고객감정상태'
+        text: '고객 스트레스 지수'
     },
 
     subtitle: {
@@ -342,7 +337,7 @@ const customerChartStress = Highcharts.chart('customerChartStress', {
 
     yAxis: {
         title: {
-            text: 'Number of Employees'
+        	text: '스트레스 지수'
         }
     },
 
