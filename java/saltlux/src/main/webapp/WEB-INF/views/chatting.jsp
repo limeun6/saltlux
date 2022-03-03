@@ -22,15 +22,13 @@
   <!-- amcharts : Comparing Different Date Values Google Analytics Style -->
   <!-- Styles -->
 	<style>
-	#counselorChartStress {
-	  width: 100%;
-  	  height: 230px;
-	  max-width: 100%;
+	#counselorChartdiv1 {
+		width: 150%;
+		height:130%;
 	}
-	#customerChartStress {
-	  width: 100%;
-  	  height: 230px;
-	  max-width: 100%;
+	#customerChartdiv1 {
+	  	width: 150%;
+		height: 130%;
 	}
 	</style>
 	
@@ -45,7 +43,10 @@
 		<!-- 차트용 글로벌 변수 -->
 		var counselorStressList=[0];
 		var customerStressList=[0];
+		var detailData=[0][0];
+		<!-- detailData저장-->
 		
+		<!-- -->
 		function getListFilter(data,key,value){
 			if(data.TYPE=="S"){
 				return data.result.filter(function(object){
@@ -105,7 +106,7 @@
 					$("input[name=customerInput]").val("");
 					// 스트레스값을 저장
 					//console.log(getListFilter(data,'type','stress'))
-					customerStressList.push(data.result[0].score);
+					customerStressList.push(JSON.parse(data).Stress);
 					// 차트에 반영
 					customerChartStress.update({
 						series: [{
@@ -154,7 +155,7 @@
 				processData: false,
 				contentType: false,
 				success: function(data){
-					console.log(data)
+					
 					question = $("input[name=counselorInput]").val();
 					$("#result").append(
 							"<div class='chat-msg owner'>"+
@@ -168,7 +169,8 @@
 						    "</div>");
 					$("input[name=counselorInput]").val("");
 					// 스트레스값을 저장
-					counselorStressList.push(data.result[0].score);
+					//console.log(data)
+					counselorStressList.push(JSON.parse(data).Stress);
 					// 차트에 반영
 					counselorChartStress.update({
 						series: [{
@@ -204,6 +206,13 @@
  <div class="header">
     <h1><a href="/" style="font-size: 30px; margin: 0; line-height: 1; font-weight: 400; letter-spacing: 2px; color: #5777ba;
   text-decoration: none;">three jo</a></h1> 
+  <div class="user-settings">
+   <div class="dark-light">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" /></svg>
+   </div>
+   
+  </div>
  </div>
  <div class="wrapper">
   <div class="chat-area">
@@ -268,7 +277,7 @@
 const counselorChartStress = Highcharts.chart('counselorChartStress', {
 
     title: {
-        text: '상담사 스트레스 지수'
+        text: '상담사감정상태'
     },
 
     subtitle: {
@@ -277,7 +286,7 @@ const counselorChartStress = Highcharts.chart('counselorChartStress', {
 
     yAxis: {
         title: {
-            text: '스트레스 지수'
+            text: 'Number of Employees'
         }
     },
 
@@ -328,7 +337,7 @@ const counselorChartStress = Highcharts.chart('counselorChartStress', {
 const customerChartStress = Highcharts.chart('customerChartStress', {
 
     title: {
-        text: '고객 스트레스 지수'
+        text: '고객감정상태'
     },
 
     subtitle: {
@@ -337,7 +346,7 @@ const customerChartStress = Highcharts.chart('customerChartStress', {
 
     yAxis: {
         title: {
-        	text: '스트레스 지수'
+            text: 'Number of Employees'
         }
     },
 
