@@ -12,7 +12,7 @@ def stress_score(emotion_result,sentiment_result) -> float:
     감성의 결과에 따라 상담사 및 고객의 심리점수를 계산하여 반환한다.
     '''
     negative = sum(emotion_result[0:8])
-    positive = sum(emotion_result[7:10])
+    positive = sum(emotion_result[8:10])
     if sentiment_result.argmax()==0:
         result_score = 0.7*positive - 0.3*negative
     elif sentiment_result.argmax()==1:
@@ -21,25 +21,31 @@ def stress_score(emotion_result,sentiment_result) -> float:
         result_score = 0.5*positive - 0.5*negative
         
     #반환값 텐서->float 2자리수에서 반올림
-    return round(float(result_score*(100/140) + 50),2)
+    return round(float(result_score*100/140*100+ 50),2)
 
 """
 문장 전처리
-df: str : 고객/상담사가 입력한 문장
+sentence : str : 고객/상담사가 입력한 문장
 d2 : str : 처리2단계한 값
 """
-def beforSentence(df):
-    d1=remove_signal(df)
-    d2=spelling_spacing_words(d1)
-    return d2
+def after_sentence(sentence:str) -> str:
+    """
+    문장 전처리-특수문자제거,맞춤법
+    """
+    take1=remove_signal(sentence)
+    take2=spelling_spacing_words(take1)
+    return take2
 
 """
 특수문자 제거
-df: str : 고객/상담사가 입력한 문장
-remove : str : 특수문자제외
+sentence: str : 고객/상담사가 입력한 문장
+remove : str : 처리후 문장
 """
-def remove_signal(df):
-    remove = re.sub(r"([?!])",r" \1 ",df)
+def remove_signal(sentence:str)->str:
+    """
+    특수문자 제거
+    """
+    remove = re.sub(r"([?!])",r" \1 ",sentence)
     remove = re.sub(r"([^0-9a-zA-Z가-힣ㄱ-ㅎ!?. ])",'',remove)
     remove = remove.strip()
     return remove
@@ -47,12 +53,15 @@ def remove_signal(df):
 
 """
 맞춤법,띄어쓰기 수정
-df: str : 고객/상담사가 입력한 문장
-remove : str : 맞춤법,띄어쓰기수정한 문장
+sentence: str : 고객/상담사가 입력한 문장
+word : str : 처리후 문장
 """
-def spelling_spacing_words(df):
+def spelling_spacing_words(sentence:str) -> str:
+    """
+    맞춤법,띄어쓰기
+    """
     from hanspell import spell_checker
-    check = spell_checker.check(df)
+    check = spell_checker.check(sentence)
     word = ''
 
     for key, value in check.words.items():
