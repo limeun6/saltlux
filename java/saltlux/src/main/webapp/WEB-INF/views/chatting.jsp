@@ -70,7 +70,22 @@
 	
 	<!-- 비동기요청 -->
 	<script>
-	$(function(){
+	$(document).ready(function(){
+		$("#customerInput").keydown(function (key){
+			if (key.keyCode == 13){
+				$("#customerInputBtn").click();
+			}
+		});
+		
+		$("#counselorInput").keydown(function (key){
+			if (key.keyCode == 13){
+				$("#counselorInputBtn").click();
+			}
+		});
+		
+	});
+	
+	$(function(){		
 		$("#customerInputBtn").click(function(){
 			req_url = "http://localhost:5000/chatting"
 			var form = $("#form1")[0];
@@ -83,7 +98,7 @@
 			var hours = now.getHours();	// 시간
 			var minutes = now.getMinutes();	// 분
 			var seconds = now.getSeconds();	// 초
-
+			
 			// 비동기요청
 			$.ajax({
 				url:req_url,
@@ -229,11 +244,13 @@
             <!-- chat-area-main -->
             <div class="chat-area-footer">
                <form action="#" method="POST" id="form1">
-                  <input type="text" name="customerInput" placeholder="고객 채팅 입력..." />
+                  <input type="text" name="customerInput" id="customerInput" placeholder="고객 채팅 입력..." />
+                  <input type="text" style="display:none;">
                   <input type="button" value="전송" id="customerInputBtn" class="btn btn-primary" style="width=20%; border: #9F7AEA; background: #9F7AEA "></button>
                </form>
                <form action="#" method="POST" id="form2">
-                  <input type="text" name="counselorInput" placeholder="상담사 채팅 입력..." />
+                  <input type="text" name="counselorInput" id="counselorInput" placeholder="상담사 채팅 입력..." " />
+                  <input type="text" style="display:none;">
                   <input type="button" value="전송" id="counselorInputBtn" class="btn btn-primary" style="width=20%; border: #38b2ac; background: #38b2ac"></button>
                </form>
             </div>
