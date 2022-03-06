@@ -70,59 +70,79 @@
 	
 	<!-- 비동기요청 -->
 	<script>
-	$(function(){
+	$(document).ready(function(){
+		$("#customerInput").keydown(function (key){
+			if (key.keyCode == 13){
+				$("#customerInputBtn").click();
+			}
+		});
+		
+		$("#counselorInput").keydown(function (key){
+			if (key.keyCode == 13){
+				$("#counselorInputBtn").click();
+			}
+		});
+		
+	});
+	
+	$(function(){		
 		$("#customerInputBtn").click(function(){
-			req_url = "http://localhost:5000/chatting"
-			var form = $("#form1")[0];
-			var form_data = new FormData(form);
-			var isScrollUp = false;
-			var lastScrollTop;
-			var divChat = document.getElementById('div_chat');
-			
-			var now = new Date();	// 현재 날짜 및 시간
-			var hours = now.getHours();	// 시간
-			var minutes = now.getMinutes();	// 분
-			var seconds = now.getSeconds();	// 초
-
-			// 비동기요청
-			$.ajax({
-				url:req_url,
-				async: true,
-				type: "POST",
-				data: form_data,
-				processData: false,
-				contentType: false,
-				success: function(data){
-					question = $("input[name=customerInput]").val();
-					$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
-							"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
-							"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
-							"<div class='chat-msg-content'><div class='chat-msg-text'>"+ question +"</div></div></div>");
-					$("input[name=customerInput]").val("");
-					
-					// 스트레스값을 저장
-					customerStressList.push(JSON.parse(data).Stress);
-					
-					// 차트에 갱신
-					customerChartStress.update({
-						series: [{
-							name: 'Stress',
-							data: customerStressList
-							}]
-					});
-					
-					// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
-				    if (!isScrollUp) {
-				      $('#div_chat').animate({
-				        scrollTop: divChat.scrollHeight - divChat.clientHeight
-				      }, 100);
-				    }
-				},
-				// 애러 발생시 경고창
-				error: function(e){
-					alert(e);
-				}
-			})
+			if ($("#customerInput").val()==''){
+				alert("내용을 입력하세요.")
+			}
+			else{
+				req_url = "http://localhost:5000/chatting"
+				var form = $("#form1")[0];
+				var form_data = new FormData(form);
+				var isScrollUp = false;
+				var lastScrollTop;
+				var divChat = document.getElementById('div_chat');
+				
+				var now = new Date();	// 현재 날짜 및 시간
+				var hours = now.getHours();	// 시간
+				var minutes = now.getMinutes();	// 분
+				var seconds = now.getSeconds();	// 초
+				
+				// 비동기요청
+				$.ajax({
+					url:req_url,
+					async: true,
+					type: "POST",
+					data: form_data,
+					processData: false,
+					contentType: false,
+					success: function(data){
+						question = $("input[name=customerInput]").val();
+						$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
+								"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
+								"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
+								"<div class='chat-msg-content'><div class='chat-msg-text'>"+ question +"</div></div></div>");
+						$("input[name=customerInput]").val("");
+						
+						// 스트레스값을 저장
+						customerStressList.push(JSON.parse(data).Stress);
+						
+						// 차트에 갱신
+						customerChartStress.update({
+							series: [{
+								name: 'Stress',
+								data: customerStressList
+								}]
+						});
+						
+						// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
+					    if (!isScrollUp) {
+					      $('#div_chat').animate({
+					        scrollTop: divChat.scrollHeight - divChat.clientHeight
+					      }, 100);
+					    }
+					},
+					// 애러 발생시 경고창
+					error: function(e){
+						alert(e);
+					}
+				})
+			}
 		})
 	})
 	</script>
@@ -130,64 +150,69 @@
 	<script>
 	$(function(){
 		$("#counselorInputBtn").click(function(){
-			req_url = "http://localhost:5000/chatting"
-			var form = $("#form2")[0];
-			var form_data = new FormData(form);
-			var isScrollUp = false;
-			var lastScrollTop;
-			var divChat = document.getElementById('div_chat');
-			
-			var now = new Date();	// 현재 날짜 및 시간
-			var hours = now.getHours();	// 시간
-			var minutes = now.getMinutes();	// 분
-			var seconds = now.getSeconds();	// 초
-
-			// 비동기요청
-			$.ajax({
-				url:req_url,
-				async: true,
-				type: "POST",
-				data: form_data,
-				processData: false,
-				contentType: false,
-				success: function(data){
-					question = $("input[name=counselorInput]").val();
-					$("#result").append(
-							"<div class='chat-msg owner'>"+
-						     "<div class='chat-msg-profile'>"+
-						      "<img class='chat-msg-img' src='assets/img/operator.png' alt='' />"+
-						      "<div class='chat-msg-date'>" + hours+":"+ minutes + "</div>"+
-						     "</div>"+
-						     "<div class='chat-msg-content'>"+
-						      "<div class='chat-msg-text'>"+question+"</div>"+
-						     "</div>"+
-						    "</div>");
-					$("input[name=counselorInput]").val("");
-					
-					// 스트레스값을 저장
-					counselorStressList.push(JSON.parse(data).Stress);
-					
-					// 차트에 갱신
-					counselorChartStress.update({
-						series: [{
-							name: 'Stress',
-							data: counselorStressList
-							}]
-					});
-					
-					// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
-				    if (!isScrollUp) {
-				      $('#div_chat').animate({
-				        scrollTop: divChat.scrollHeight - divChat.clientHeight
-				      }, 100);
-				    }
-				},
+			if ($("#counselorInput").val()==''){
+				alert("내용을 입력하세요.")
+			}
+			else{			
+				req_url = "http://localhost:5000/chatting"
+				var form = $("#form2")[0];
+				var form_data = new FormData(form);
+				var isScrollUp = false;
+				var lastScrollTop;
+				var divChat = document.getElementById('div_chat');
 				
-				// 애러발생시 경고창
-				error: function(e){
-					alert(e);
-				}
-			})
+				var now = new Date();	// 현재 날짜 및 시간
+				var hours = now.getHours();	// 시간
+				var minutes = now.getMinutes();	// 분
+				var seconds = now.getSeconds();	// 초
+	
+				// 비동기요청
+				$.ajax({
+					url:req_url,
+					async: true,
+					type: "POST",
+					data: form_data,
+					processData: false,
+					contentType: false,
+					success: function(data){
+						question = $("input[name=counselorInput]").val();
+						$("#result").append(
+								"<div class='chat-msg owner'>"+
+							     "<div class='chat-msg-profile'>"+
+							      "<img class='chat-msg-img' src='assets/img/operator.png' alt='' />"+
+							      "<div class='chat-msg-date'>" + hours+":"+ minutes + "</div>"+
+							     "</div>"+
+							     "<div class='chat-msg-content'>"+
+							      "<div class='chat-msg-text'>"+question+"</div>"+
+							     "</div>"+
+							    "</div>");
+						$("input[name=counselorInput]").val("");
+						
+						// 스트레스값을 저장
+						counselorStressList.push(JSON.parse(data).Stress);
+						
+						// 차트에 갱신
+						counselorChartStress.update({
+							series: [{
+								name: 'Stress',
+								data: counselorStressList
+								}]
+						});
+						
+						// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
+					    if (!isScrollUp) {
+					      $('#div_chat').animate({
+					        scrollTop: divChat.scrollHeight - divChat.clientHeight
+					      }, 100);
+					    }
+					},
+					
+					// 애러발생시 경고창
+					error: function(e){
+						alert(e);
+					}
+				})
+			}
 		})
 	})
 	</script>
@@ -228,14 +253,20 @@
             </div>
             <!-- chat-area-main -->
             <div class="chat-area-footer">
-               <form action="#" method="POST" id="form1">
-                  <input type="text" name="customerInput" placeholder="고객 채팅 입력..." />
-                  <input type="button" value="전송" id="customerInputBtn" class="btn btn-primary" style="width=20%; border: #9F7AEA; background: #9F7AEA "></button>
-               </form>
-               <form action="#" method="POST" id="form2">
-                  <input type="text" name="counselorInput" placeholder="상담사 채팅 입력..." />
-                  <input type="button" value="전송" id="counselorInputBtn" class="btn btn-primary" style="width=20%; border: #38b2ac; background: #38b2ac"></button>
-               </form>
+	            <div id="inputForm1">
+	               <form action="#" method="POST" id="form1">
+	                  <input type="text" name="customerInput" id="customerInput" placeholder="고객 채팅 입력..." />
+	                  <input type="text" style="display:none;">
+	                  <input type="button" value="전송" id="customerInputBtn" class="btn btn-primary" style="width=20%; border: #9F7AEA; background: #9F7AEA "></button>
+	               </form>
+	            </div>
+	            <div id="inputForm2">
+	               <form action="#" method="POST" id="form2">
+	                  <input type="text" name="counselorInput" id="counselorInput" placeholder="상담사 채팅 입력..." />
+	                  <input type="text" style="display:none;">
+	                  <input type="button" value="전송" id="counselorInputBtn" class="btn btn-primary" style="width=20%; border: #38b2ac; background: #38b2ac"></button>
+	               </form>
+	            </div>
             </div>
             <!-- chat-area-footer -->
          </div>

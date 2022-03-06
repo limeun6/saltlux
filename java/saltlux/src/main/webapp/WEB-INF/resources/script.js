@@ -9,8 +9,3 @@ colors.forEach(color => {
     color.classList.add('selected');
   });
 });
-
-toggleButton.addEventListener('click', () => {
-  document.body.classList.toggle('dark-mode');
-});
-
