@@ -1,3 +1,4 @@
+/* chatting.jsp css*/
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Manrope:300,400,500,600,700&display=swap&subset=latin-ext");
 :root {
@@ -524,7 +525,6 @@ html {
 	height: 95%;
 	width: 25%
 }
-
 
 .chat-area-footer input::placeholder {
   color: var(--input-chat-color);
