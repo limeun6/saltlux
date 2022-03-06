@@ -18,7 +18,9 @@
 
 <!-- bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
+<!-- Ajax -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	
   <!-- amcharts : Comparing Different Date Values Google Analytics Style -->
   <!-- Styles -->
 	<style>
@@ -71,7 +73,61 @@
 	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 	
 	<script src="https://code.highcharts.com/highcharts-3d.js"></script>
-		
+	
+  
+<script>	
+	<!-- 비동기요청 -->
+	function windowonload(){		
+				req_url = "http://localhost:5000/resultDetail";
+				var sentence_emotion_list = [0][0];
+				var single_emotion_list = [0][0];
+				var multi_emotion_list = [0][0];
+				var sentence_sentiment_list = [0][0];
+				var single_sentiment_list = [0][0];
+				var multi_emotion_list = [0][0];
+				// 비동기요청
+				$.ajax({
+					url:req_url,
+					async: true,
+					type: "GET",
+					processData: false,
+					contentType: false,
+					success: function(data){
+						var test = JSON.parse(data)
+						// 스트레스값을 저장
+						<!-- sentence_emotion_list.push(JSON.parse(data)) -->
+						<!--customerStressList.push(JSON.parse(data).Stress); -->
+						SentenceEmotion = test.sentence_emotion;
+						SentenceSentiment = test.sentence_sentiment;
+						SingleEmotion = test.single_emotion;
+						SingleSentiment = test.single_sentiment;
+						MultiEmotion = test.multi_emotion;
+						MultiSentiment = test.multi_sentiment;
+						console.log(SentenceEmotion, SentenceSentiment, SingleEmotion,
+								SingleSentiment, MultiEmotion, MultiSentiment)
+						
+						one = SetenceEmotion.number0;
+						console.log(one);
+						
+						// 차트에 갱신
+
+						customerChartStress.update({
+							series: [{
+								name: 'Stress',
+								data: customerStressList
+										}]
+								});
+							},
+					// 애러 발생시 경고창
+					error: function(e){
+					alert(e);
+							}
+						})
+
+}
+window.onload = windowonload;
+</script>
+
 </head>
 <body>
 <!-- partial:index.partial.html -->
@@ -189,7 +245,7 @@ Highcharts.chart('EmotionSentenceChart', {
 
 	  yAxis: {
 	    title: {
-	      text: 'Number of Employees'
+	      text: 'emotion score'
 	    }
 	  },
 
