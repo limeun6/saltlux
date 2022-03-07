@@ -123,14 +123,19 @@ def detail():
         value = make_sentiment_dict(value)
         multi_sentiment_json['number'+str(key)] = value
 
+    len_multi = len(multi_emotion_json) - 1
+    all_emotion_json = multi_emotion_json['number' + str(len_multi)]
+    all_sentiment_json = multi_sentiment_json['number' + str(len_multi)]
+
     total_json_list = [sentence_emotion_json, sentence_sentiment_json,
                        single_emotion_json, single_sentiment_json,
-                       multi_emotion_json, multi_sentiment_json]
+                       multi_emotion_json, multi_sentiment_json,
+                       all_emotion_json, all_sentiment_json]
     total_json_name = ['sentence_emotion', 'sentence_sentiment',
                        'single_emotion', 'single_sentiment',
-                       'multi_emotion', 'multi_sentiment']
+                       'multi_emotion', 'multi_sentiment',
+                       'all_emotion', 'all_sentiment']
     total_json = dict(zip(total_json_name, total_json_list))
-    print(total_json)
 
     # print(sentence_emotion_json)
     # print(sentence_sentiment_json)
