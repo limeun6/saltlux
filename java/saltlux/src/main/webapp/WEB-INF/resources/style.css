@@ -500,6 +500,7 @@ html {
 
 .chat-area-footer {
   display: flex;
+  justify-content: space-around;
   border-top: 1px solid var(--border-color);
   width: 100%;
   padding: 10px 10px;
@@ -797,8 +798,6 @@ html {
     padding-right: 10px;
   }
 }
-
-
 
 
 /*--------------------------------------------------------------

@@ -82,7 +82,6 @@
 				$("#counselorInputBtn").click();
 			}
 		});
-		
 	});
 	
 	$(function(){		
@@ -130,6 +129,20 @@
 								}]
 						});
 						
+						var stress = JSON.parse(data).Stress;
+						if (stress>=85){
+							$('.customerEmoji').attr('src', 'assets/img/angry.png')
+						}
+						else if (stress>=60){
+							$('.customerEmoji').attr('src', 'assets/img/sad.png')
+						}
+						else if (stress>=30){
+							$('.customerEmoji').attr('src', 'assets/img/soso.png')
+						}
+						else{
+							$('.customerEmoji').attr('src', 'assets/img/smile.png')
+						}
+						
 						// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
 					    if (!isScrollUp) {
 					      $('#div_chat').animate({
@@ -165,7 +178,7 @@
 				var hours = now.getHours();	// 시간
 				var minutes = now.getMinutes();	// 분
 				var seconds = now.getSeconds();	// 초
-	
+				
 				// 비동기요청
 				$.ajax({
 					url:req_url,
@@ -198,6 +211,20 @@
 								data: counselorStressList
 								}]
 						});
+						
+						var stress = JSON.parse(data).Stress;
+						if (stress>=85){
+							$('.counselorEmoji').attr('src', 'assets/img/angry.png')
+						}
+						else if (stress>=60){
+							$('.counselorEmoji').attr('src', 'assets/img/sad.png')
+						}
+						else if (stress>=30){
+							$('.counselorEmoji').attr('src', 'assets/img/soso.png')
+						}
+						else{
+							$('.counselorEmoji').attr('src', 'assets/img/smile.png')
+						}
 						
 						// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
 					    if (!isScrollUp) {
@@ -253,18 +280,18 @@
             </div>
             <!-- chat-area-main -->
             <div class="chat-area-footer">
-	            <div id="inputForm1">
+	            <div id="inputForm1" style="text-align: center;">
 	               <form action="#" method="POST" id="form1">
 	                  <input type="text" name="customerInput" id="customerInput" placeholder="고객 채팅 입력..." />
 	                  <input type="text" style="display:none;">
-	                  <input type="button" value="전송" id="customerInputBtn" class="btn btn-primary" style="width=20%; border: #9F7AEA; background: #9F7AEA "></button>
+	                  <input type="button" value="전송" id="customerInputBtn" class="btn btn-primary" style="border: #9F7AEA; background: #9F7AEA "></button>
 	               </form>
 	            </div>
-	            <div id="inputForm2">
+	            <div id="inputForm2" style="text-align: center;">
 	               <form action="#" method="POST" id="form2">
 	                  <input type="text" name="counselorInput" id="counselorInput" placeholder="상담사 채팅 입력..." />
 	                  <input type="text" style="display:none;">
-	                  <input type="button" value="전송" id="counselorInputBtn" class="btn btn-primary" style="width=20%; border: #38b2ac; background: #38b2ac"></button>
+	                  <input type="button" value="전송" id="counselorInputBtn" class="btn btn-primary" style="border: #38b2ac; background: #38b2ac"></button>
 	               </form>
 	            </div>
             </div>
@@ -273,11 +300,14 @@
          <!-- chat-area -->
          <div class="detail-area">
             <div class="detail-area-header">
+            <div class="detail-title">상담사 스트레스 지수<span id="counselorResultEmoji"><img class="counselorEmoji" src="assets/img/soso.png" alt="" style="width:30px; height:30px; margin-left:20px;"/></span></div>
                <figure class="highcharts-figure">
                   <div id="counselorChartStress"></div>
                </figure>
             </div>
             <div class="detail-area-header">
+            <div class="detail-title">고객 스트레스 지수<span id="customerResultEmoji"><img class="customerEmoji" src="assets/img/soso.png" alt="" style="width:30px; height:30px; margin-left:20px;"/></span></div>
+            <div class="customerEmoji"></div>
                <figure class="highcharts-figure">
                   <div id="customerChartStress"></div>
                </figure>
@@ -299,9 +329,9 @@
       const counselorChartStress = Highcharts.chart('counselorChartStress', {
       
           title: {
-              text: '상담사 스트레스 지수'
+              text: ''
           },
-      
+          credits: {enabled: false},
           subtitle: {
               text: ''
           },
@@ -309,13 +339,15 @@
           yAxis: {
               title: {
                   text: '스트레스 지수'
-              }
+              },
+              max:100
           },
       
           xAxis: {
               accessibility: {
                   rangeDescription: 'Range: 2010 to 2017'
-              }
+              },
+              tickInterval: 1
           },
       
           legend: {
@@ -359,9 +391,9 @@
       const customerChartStress = Highcharts.chart('customerChartStress', {
       
           title: {
-              text: '고객 스트레스 지수'
+              text: ''
           },
-      
+          credits: {enabled: false},
           subtitle: {
               text: ''
           },
@@ -369,13 +401,16 @@
           yAxis: {
               title: {
                   text: '스트레스 지수'
-              }
+              },
+          	  max:100
+          		
           },
       
           xAxis: {
               accessibility: {
                   rangeDescription: 'Range: 2010 to 2017'
-              }
+              },
+              tickInterval: 1
           },
       
           legend: {

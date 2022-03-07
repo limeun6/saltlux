@@ -73,59 +73,377 @@
 	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 	
 	<script src="https://code.highcharts.com/highcharts-3d.js"></script>
-	
-  
 <script>	
 	<!-- 비동기요청 -->
 	function windowonload(){		
-				req_url = "http://localhost:5000/resultDetail";
-				var sentence_emotion_list = [0][0];
-				var single_emotion_list = [0][0];
-				var multi_emotion_list = [0][0];
-				var sentence_sentiment_list = [0][0];
-				var single_sentiment_list = [0][0];
-				var multi_emotion_list = [0][0];
-				// 비동기요청
-				$.ajax({
-					url:req_url,
-					async: true,
-					type: "GET",
-					processData: false,
-					contentType: false,
-					success: function(data){
-						var test = JSON.parse(data)
-						// 스트레스값을 저장
-						<!-- sentence_emotion_list.push(JSON.parse(data)) -->
-						<!--customerStressList.push(JSON.parse(data).Stress); -->
-						SentenceEmotion = test.sentence_emotion;
-						SentenceSentiment = test.sentence_sentiment;
-						SingleEmotion = test.single_emotion;
-						SingleSentiment = test.single_sentiment;
-						MultiEmotion = test.multi_emotion;
-						MultiSentiment = test.multi_sentiment;
-						console.log(SentenceEmotion, SentenceSentiment, SingleEmotion,
-								SingleSentiment, MultiEmotion, MultiSentiment)
-						
-						one = SetenceEmotion.number0;
-						console.log(one);
-						
-						// 차트에 갱신
+		req_url = "http://localhost:5000/resultDetail";
+		// 감정 - 문장
+		var sentenceEmotionAnger = [];
+		var sentenceEmotionSad = [];
+		var sentenceEmotionSurprise = [];
+		var sentenceEmotionHatred = [];
+		var sentenceEmotionHurt = [];
+		var sentenceEmotionPanic = [];
+		var sentenceEmotionAnxiety = [];
+		var sentenceEmotionJoy = [];
+		var sentenceEmotionHappy = [];
+		var sentenceEmotionNeutrality = [];
+		
+		// 감정 - 싱글턴
+		var singleEmotionAnger = [];
+		var singleEmotionSad = [];
+		var singleEmotionSurprise = [];
+		var singleEmotionHatred = [];
+		var singleEmotionHurt = [];
+		var singleEmotionPanic = [];
+		var singleEmotionAnxiety = [];
+		var singleEmotionJoy = [];
+		var singleEmotionHappy = [];
+		var singleEmotionNeutrality = [];
+		
+		// 감정 - 멀티턴
+		var multiEmotionAnger = [];
+		var multiEmotionSad = [];
+		var multiEmotionSurprise = [];
+		var multiEmotionHatred = [];
+		var multiEmotionHurt = [];
+		var multiEmotionPanic = [];
+		var multiEmotionAnxiety = [];
+		var multiEmotionJoy = [];
+		var multiEmotionHappy = [];
+		var multiEmotionNeutrality = [];
+		
+		// 감정 - 최종
+		var EmotionResult = [];
+		
+		// 감성 - 문장별
+		var sentenceSentimentPositive = [];
+		var sentenceSentimentNegative = [];
+		var sentenceSentimentMiddle = [];
+		
+		// 감성 - 싱글턴
+		var singleSentimentPositive = [];
+		var singleSentimentNegative = [];
+		var singleSentimentMiddle = [];
+		
+		// 감성 - 멀티턴
+		var multiSentimentPositive = [];
+		var multiSentimentNegative = [];
+		var multiSentimentMiddle = [];
+		
+		// 감성 - 최종
+		var SentimentResult = [];
+		
+		// 비동기요청
+		$.ajax({
+			url:req_url,
+			async: true,
+			type: "GET",
+			processData: false,
+			contentType: false,
+			success: function(data){
+				var test = JSON.parse(data)
+				// 스트레스값을 저장
+				<!-- sentence_emotion_list.push(JSON.parse(data)) -->
+				<!--customerStressList.push(JSON.parse(data).Stress); -->
+				SentenceEmotion = test.sentence_emotion;
+				SentenceSentiment = test.sentence_sentiment;
+				SingleEmotion = test.single_emotion;
+				SingleSentiment = test.single_sentiment;
+				MultiEmotion = test.multi_emotion;
+				MultiSentiment = test.multi_sentiment;
+				AllEmotion = test.all_emotion;
+				AllSentiment = test.all_sentiment;
+				console.log(SentenceEmotion, SentenceSentiment, SingleEmotion,
+						SingleSentiment, MultiEmotion, MultiSentiment,
+						AllEmotion, AllSentiment);
+				
+				//one = SentenceEmotion.number0;
+				//console.log(one);
+				// console.log(SentenceEmotion.number0.emotion.anger);
+				
+				// 감정 - 문장별
+				for(var ele in SentenceEmotion){
+					for(var ele2 in SentenceEmotion[ele]){
+						// console.log(SentenceEmotion[ele][ele2].anger);
+						sentenceEmotionAnger.push(SentenceEmotion[ele][ele2].anger);
+						sentenceEmotionSad.push(SentenceEmotion[ele][ele2].sad);
+						sentenceEmotionSurprise.push(SentenceEmotion[ele][ele2].surprise);
+						sentenceEmotionHatred.push(SentenceEmotion[ele][ele2].hatred);
+						sentenceEmotionHurt.push(SentenceEmotion[ele][ele2].hurt);
+						sentenceEmotionPanic.push(SentenceEmotion[ele][ele2].panic);
+						sentenceEmotionAnxiety.push(SentenceEmotion[ele][ele2].anxiety);
+						sentenceEmotionJoy.push(SentenceEmotion[ele][ele2].joy);
+						sentenceEmotionHappy.push(SentenceEmotion[ele][ele2].happy);
+						sentenceEmotionNeutrality.push(SentenceEmotion[ele][ele2].neutrality);
+					}
+				}
+				
+				// 감정 - 싱글턴
+				for(var ele in SingleEmotion){
+					for(var ele2 in SingleEmotion[ele]){
+						singleEmotionAnger.push(SingleEmotion[ele][ele2].anger);
+						singleEmotionSad.push(SingleEmotion[ele][ele2].sad);
+						singleEmotionSurprise.push(SingleEmotion[ele][ele2].surprise);
+						singleEmotionHatred.push(SingleEmotion[ele][ele2].hatred);
+						singleEmotionHurt.push(SingleEmotion[ele][ele2].hurt);
+						singleEmotionPanic.push(SingleEmotion[ele][ele2].panic);
+						singleEmotionAnxiety.push(SingleEmotion[ele][ele2].anxiety);
+						singleEmotionJoy.push(SingleEmotion[ele][ele2].joy);
+						singleEmotionHappy.push(SingleEmotion[ele][ele2].happy);
+						singleEmotionNeutrality.push(SingleEmotion[ele][ele2].neutrality);
+					}
+				}
+				
+				// 감정 - 멀티턴
+				for(var ele in MultiEmotion){
+					for(var ele2 in MultiEmotion[ele]){
+						multiEmotionAnger.push(MultiEmotion[ele][ele2].anger);
+						multiEmotionSad.push(MultiEmotion[ele][ele2].sad);
+						multiEmotionSurprise.push(MultiEmotion[ele][ele2].surprise);
+						multiEmotionHatred.push(MultiEmotion[ele][ele2].hatred);
+						multiEmotionHurt.push(MultiEmotion[ele][ele2].hurt);
+						multiEmotionPanic.push(MultiEmotion[ele][ele2].panic);
+						multiEmotionAnxiety.push(MultiEmotion[ele][ele2].anxiety);
+						multiEmotionJoy.push(MultiEmotion[ele][ele2].joy);
+						multiEmotionHappy.push(MultiEmotion[ele][ele2].happy);
+						multiEmotionNeutrality.push(MultiEmotion[ele][ele2].neutrality);
+					}
+				}
+				
+				// 감정 - 최종
+			
+				
+					angry = ['분노', AllEmotion.emotion.anger];
+					EmotionResult.push(angry);
+					sad = ['슬픔', AllEmotion.emotion.sad];
+					EmotionResult.push(sad);
+					surprise = ['놀람', AllEmotion.emotion.surprise];
+					EmotionResult.push(surprise);
+					hatred = ['혐오', AllEmotion.emotion.hatred];
+					EmotionResult.push(hatred);
+					hurt = ['상처', AllEmotion.emotion.hurt];
+					EmotionResult.push(hurt);
+					panic = ['당황', AllEmotion.emotion.panic];
+					EmotionResult.push(panic);
+					anxiety = ['불안', AllEmotion.emotion.anxiety];
+					EmotionResult.push(anxiety);
+					joy = ['기쁨', AllEmotion.emotion.joy];
+					EmotionResult.push(joy);
+					happy = ['행복', AllEmotion.emotion.happy];
+					EmotionResult.push(happy);
+					neutrality = ['중립', AllEmotion.emotion.neutrality];
+					EmotionResult.push(neutrality);
+					console.log(EmotionResult);
+					
+					
+				// 감성 - 문장별
+				for(var ele in SentenceSentiment){
+					for(var ele2 in SentenceSentiment[ele]){
+						console.log(SentenceSentiment[ele][ele2].anger);
+						sentenceSentimentPositive.push(SentenceSentiment[ele][ele2].positive);
+						sentenceSentimentNegative.push(SentenceSentiment[ele][ele2].negative);
+						sentenceSentimentMiddle.push(SentenceSentiment[ele][ele2].middle);
+					}
+				}
+				
+				// 감성 - 싱글턴
+				for(var ele in SingleSentiment){
+					for(var ele2 in SingleSentiment[ele]){
+						singleSentimentPositive.push(SingleSentiment[ele][ele2].positive);
+						singleSentimentNegative.push(SingleSentiment[ele][ele2].negative);
+						singleSentimentMiddle.push(SingleSentiment[ele][ele2].middle);
+					}
+				}
+				
+				// 감성 - 멀티턴
+				for(var ele in MultiSentiment){
+					for(var ele2 in MultiSentiment[ele]){
+						multiSentimentPositive.push(MultiSentiment[ele][ele2].positive);
+						multiSentimentNegative.push(MultiSentiment[ele][ele2].negative);
+						multiSentimentMiddle.push(MultiSentiment[ele][ele2].middle);
+					}
+				}
+				
+				// 감성 - 최종
+					positive = ['긍정', AllSentiment.sentiment.positive];
+					SentimentResult.push(positive);
+					negative = ['부정', AllSentiment.sentiment.negative];
+					SentimentResult.push(negative);
+					middle = ['중립', AllSentiment.sentiment.middle];
+					SentimentResult.push(middle);
+				
+				// 차트에 갱신 - 감정 문장별
+				EmotionSentenceChart.update({
+					series: [{
+						name: '분노',
+						data: sentenceEmotionAnger
+					  }, {
+					    name: '슬픔',
+					    data: sentenceEmotionSad
+					  }, {
+					    name: '놀람',
+					    data: sentenceEmotionSurprise
+					  }, {
+					    name: '혐오',
+					    data: sentenceEmotionHatred
+					  }, {
+					    name: '상처',
+					    data: sentenceEmotionHurt
+					  }, {
+					    name: '당황',
+					    data: sentenceEmotionPanic
+					  }, {
+					    name: '불안',
+					    data: sentenceEmotionAnxiety
+					  }, {
+					    name: '기쁨',
+					    data: sentenceEmotionJoy
+					  }, {
+					    name: '행복',
+					    data: sentenceEmotionHappy
+					  }, {
+					    name: '중립',
+					    data:sentenceEmotionNeutrality
+					  }]
+				});
+				
+				// 차트에 갱신 - 감정 싱글턴
+				EmotionSingleChart.update({
+					series: [{
+						name: '분노',
+						data: singleEmotionAnger
+					  }, {
+					    name: '슬픔',
+					    data: singleEmotionSad
+					  }, {
+					    name: '놀람',
+					    data: singleEmotionSurprise
+					  }, {
+					    name: '혐오',
+					    data: singleEmotionHatred
+					  }, {
+					    name: '상처',
+					    data: singleEmotionHurt
+					  }, {
+					    name: '당황',
+					    data: singleEmotionPanic
+					  }, {
+					    name: '불안',
+					    data: singleEmotionAnxiety
+					  }, {
+					    name: '기쁨',
+					    data: singleEmotionJoy
+					  }, {
+					    name: '행복',
+					    data: singleEmotionHappy
+					  }, {
+					    name: '중립',
+					    data: singleEmotionNeutrality
+					  }]
+				});
+				
+				// 차트에 갱신 - 감정 멀티턴
+				EmotionMultiChart.update({
+					series: [{
+						name: '분노',
+						data: multiEmotionAnger
+					  }, {
+					    name: '슬픔',
+					    data: multiEmotionSad
+					  }, {
+					    name: '놀람',
+					    data: multiEmotionSurprise
+					  }, {
+					    name: '혐오',
+					    data: multiEmotionHatred
+					  }, {
+					    name: '상처',
+					    data: multiEmotionHurt
+					  }, {
+					    name: '당황',
+					    data: multiEmotionPanic
+					  }, {
+					    name: '불안',
+					    data: multiEmotionAnxiety
+					  }, {
+					    name: '기쁨',
+					    data: multiEmotionJoy
+					  }, {
+					    name: '행복',
+					    data: multiEmotionHappy
+					  }, {
+					    name: '중립',
+					    data: multiEmotionNeutrality
+					  }]
+				});
+				
+				// 차트에 갱신 - 감정 최종
+				EmotionFinalChart.update({
+					series: [{
+						name: 'EmotionResult',
+						data: EmotionResult
+					  }]
+				});
+				
+				// 차트에 갱신 - 감성 대화별
+				SensitivitySentenceChart.update({
+					series: [{
+						name: '긍정',
+						data: sentenceSentimentPositive
+					  }, {
+					    name: '부정',
+					    data: sentenceSentimentNegative
+					  }, {
+					    name: '중립',
+					    data: sentenceSentimentMiddle
+					  }]
+				});
+				
+				// 차트에 갱신 - 감성 싱글턴
+				SensitivitySingleChart.update({
+					series: [{
+						name: '긍정',
+						data: singleSentimentPositive
+					  }, {
+					    name: '부정',
+					    data: singleSentimentNegative
+					  }, {
+					    name: '중립',
+					    data: singleSentimentMiddle
+					  }]
+				});
+				
+				// 차트에 갱신 - 감성 멀티턴
+				SensitivityMultiChart.update({
+					series: [{
+						name: '긍정',
+						data: multiSentimentPositive
+					  }, {
+					    name: '부정',
+					    data: multiSentimentNegative
+					  }, {
+					    name: '중립',
+					    data: multiSentimentMiddle
+					  }]
+				});
+				
+				// 차트에 갱신 - 감성 최종
+				SensitivityFinalChart.update({
+					series: [{
+						name: 'SentimentResult',
+						data: SentimentResult
+					  }]
+				});
 
-						customerChartStress.update({
-							series: [{
-								name: 'Stress',
-								data: customerStressList
-										}]
-								});
-							},
-					// 애러 발생시 경고창
-					error: function(e){
-					alert(e);
-							}
-						})
-
-}
-window.onload = windowonload;
+			},
+			// 애러 발생시 경고창
+			error: function(e){
+				alert(e);
+			}
+		})
+	}
+	window.onload = windowonload;
 </script>
 
 </head>
@@ -233,12 +551,11 @@ window.onload = windowonload;
 <!-- Chart code -->
 <!-- 감정 문장별 상세결과 -->
 <script>
-Highcharts.chart('EmotionSentenceChart', {
-
+const EmotionSentenceChart = Highcharts.chart('EmotionSentenceChart', {
 	  title: {
 	    text: '문장별 상세결과'
 	  },
-
+	  credits: {enabled: false},
 	  subtitle: {
 	    text: ''
 	  },
@@ -251,8 +568,9 @@ Highcharts.chart('EmotionSentenceChart', {
 
 	  xAxis: {
 	    accessibility: {
-	      rangeDescription: 'Range: 2010 to 2017'
-	    }
+	      rangeDescription: 'Range: 1 to 30'
+	    },
+        tickInterval: 1
 	  },
 
 	  legend: {
@@ -266,40 +584,40 @@ Highcharts.chart('EmotionSentenceChart', {
 	      label: {
 	        connectorAllowed: false
 	      },
-	      pointStart: 2010
+	      pointStart: 1
 	    }
 	  },
-
+	
 	  series: [{
-	    name: '기쁨',
-	    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+		    name: '분노',
+		    data: [0]
 	  }, {
-	    name: '행복',
-	    data: [24916, 24064, 29742, 29851, 32490, 30282, 138121, 9434]
-	  }, {
-	    name: '중립',
-	    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
-	  }, {
-	    name: '분노',
-	    data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
-	  }, {
-	    name: '슬픔',
-	    data: [12908, 5948, 8105, 11248, 89089, 11816, 18274, 18111]
-	  }, {
+		    name: '슬픔',
+		    data: [0]
+		  }, {
 		    name: '놀람',
-		    data: [12908, 5948, 8105, 1148, 28989, 11816, 15274, 181101]
-	  }, {
+		    data: [0]
+		  }, {
 		    name: '혐오',
-		    data: [9208, 5048, 6105, 11248, 18989, 11416, 1874, 18111]
-	  }, {
+		    data: [0]
+		  }, {
 		    name: '상처',
-		    data: [3908, 3148, 4805, 7248, 38989, 1816, 7274, 1111]
-	  }, {
+		    data: [0]
+		  }, {
 		    name: '당황',
-		    data: [12908, 5948, 8105, 11248, 28989, 11816, 18274, 18111]
-	  }, {
+		    data: [0]
+		  }, {
 		    name: '불안',
-		    data: [3908, 5948, 8105, 2248, 4989, 7816, 8274, 1811]
+		    data: [0]
+		  }, {
+		    name: '기쁨',
+		    data: [0]
+		  }, {
+		    name: '행복',
+		    data: [0]
+		  }, {
+		    name: '중립',
+		    data: [0]
 		  }],
 
 	  responsive: {
@@ -323,26 +641,27 @@ Highcharts.chart('EmotionSentenceChart', {
 
 <!-- 감정 싱글턴 결과 -->
 <script>
-Highcharts.chart('EmotionSingleChart', {
+const EmotionSingleChart = Highcharts.chart('EmotionSingleChart', {
 
 	  title: {
 	    text: '싱글턴 상세결과'
 	  },
-
+	  credits: {enabled: false},
 	  subtitle: {
 	    text: ''
 	  },
 
 	  yAxis: {
 	    title: {
-	      text: 'Number of Employees'
+	      text: 'emotion score'
 	    }
 	  },
 
 	  xAxis: {
 	    accessibility: {
-	      rangeDescription: 'Range: 2010 to 2017'
-	    }
+	      rangeDescription: 'Range: 1 to 30'
+	    },
+        tickInterval: 1
 	  },
 
 	  legend: {
@@ -356,42 +675,42 @@ Highcharts.chart('EmotionSingleChart', {
 	      label: {
 	        connectorAllowed: false
 	      },
-	      pointStart: 2010
+	      pointStart: 1
 	    }
 	  },
 
 	  series: [{
+		    name: '분노',
+		    data: [0]
+	  }, {
+		    name: '슬픔',
+		    data: [0]
+		  }, {
+		    name: '놀람',
+		    data: [0]
+		  }, {
+		    name: '혐오',
+		    data: [0]
+		  }, {
+		    name: '상처',
+		    data: [0]
+		  }, {
+		    name: '당황',
+		    data: [0]
+		  }, {
+		    name: '불안',
+		    data: [0]
+		  }, {
 		    name: '기쁨',
-		    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+		    data: [0]
 		  }, {
 		    name: '행복',
-		    data: [24916, 24064, 29742, 29851, 32490, 30282, 138121, 9434]
+		    data: [0]
 		  }, {
 		    name: '중립',
-		    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
-		  }, {
-		    name: '분노',
-		    data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
-		  }, {
-		    name: '슬픔',
-		    data: [12908, 5948, 8105, 11248, 89089, 11816, 18274, 18111]
-		  }, {
-			    name: '놀람',
-			    data: [12908, 5948, 8105, 1148, 28989, 11816, 15274, 181101]
-		  }, {
-			    name: '혐오',
-			    data: [9208, 5048, 6105, 11248, 18989, 11416, 1874, 18111]
-		  }, {
-			    name: '상처',
-			    data: [3908, 3148, 4805, 7248, 38989, 1816, 7274, 1111]
-		  }, {
-			    name: '당황',
-			    data: [12908, 5948, 8105, 11248, 28989, 11816, 18274, 18111]
-		  }, {
-			    name: '불안',
-			    data: [3908, 5948, 8105, 2248, 4989, 7816, 8274, 1811]
-			  }],
-
+		    data: [0]
+		  }],
+		  
 	  responsive: {
 	    rules: [{
 	      condition: {
@@ -413,26 +732,27 @@ Highcharts.chart('EmotionSingleChart', {
 
 <!-- 감정 멀티턴 상세결과 -->
 <script>
-Highcharts.chart('EmotionMultiChart', {
+const EmotionMultiChart = Highcharts.chart('EmotionMultiChart', {
 
 	  title: {
 	    text: '멀티턴 상세결과'
 	  },
-
+	  credits: {enabled: false},
 	  subtitle: {
 	    text: ''
 	  },
 
 	  yAxis: {
 	    title: {
-	      text: 'Number of Employees'
+	      text: 'emotion score'
 	    }
 	  },
 
 	  xAxis: {
 	    accessibility: {
-	      rangeDescription: 'Range: 2010 to 2017'
-	    }
+	      rangeDescription: 'Range: 1 to 30'
+	    },
+        tickInterval: 1
 	  },
 
 	  legend: {
@@ -446,42 +766,42 @@ Highcharts.chart('EmotionMultiChart', {
 	      label: {
 	        connectorAllowed: false
 	      },
-	      pointStart: 2010
+	      pointStart: 1
 	    }
 	  },
 
 	  series: [{
+		    name: '분노',
+		    data: [0]
+	  }, {
+		    name: '슬픔',
+		    data: [0]
+		  }, {
+		    name: '놀람',
+		    data: [0]
+		  }, {
+		    name: '혐오',
+		    data: [0]
+		  }, {
+		    name: '상처',
+		    data: [0]
+		  }, {
+		    name: '당황',
+		    data: [0]
+		  }, {
+		    name: '불안',
+		    data: [0]
+		  }, {
 		    name: '기쁨',
-		    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+		    data: [0]
 		  }, {
 		    name: '행복',
-		    data: [24916, 24064, 29742, 29851, 32490, 30282, 138121, 9434]
+		    data: [0]
 		  }, {
 		    name: '중립',
-		    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
-		  }, {
-		    name: '분노',
-		    data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
-		  }, {
-		    name: '슬픔',
-		    data: [12908, 5948, 8105, 11248, 89089, 11816, 18274, 18111]
-		  }, {
-			    name: '놀람',
-			    data: [12908, 5948, 8105, 1148, 28989, 11816, 15274, 181101]
-		  }, {
-			    name: '혐오',
-			    data: [9208, 5048, 6105, 11248, 18989, 11416, 1874, 18111]
-		  }, {
-			    name: '상처',
-			    data: [3908, 3148, 4805, 7248, 38989, 1816, 7274, 1111]
-		  }, {
-			    name: '당황',
-			    data: [12908, 5948, 8105, 11248, 28989, 11816, 18274, 18111]
-		  }, {
-			    name: '불안',
-			    data: [3908, 5948, 8105, 2248, 4989, 7816, 8274, 1811]
-			  }],
-
+		    data: [0]
+		  }],
+		  
 	  responsive: {
 	    rules: [{
 	      condition: {
@@ -503,7 +823,7 @@ Highcharts.chart('EmotionMultiChart', {
 
 <!-- 감정 최종 상세결과 -->
 <script>
-Highcharts.chart('EmotionFinalChart', {
+const EmotionFinalChart = Highcharts.chart('EmotionFinalChart', {
   chart: {
     type: 'pie',
     options3d: {
@@ -511,6 +831,7 @@ Highcharts.chart('EmotionFinalChart', {
       alpha: 45
     }
   },
+  credits: {enabled: false},
   title: {
     text: '최종 상세결과'
   },
@@ -524,18 +845,18 @@ Highcharts.chart('EmotionFinalChart', {
     }
   },
   series: [{
-    name: 'Delivered amount',
+    name: 'EmotionResult',
     data: [
-      ['기쁨', 8],
-      ['행복', 3],
-      ['중립', 5],
-      ['분노', 6],
-      ['슬픔', 8],
-      ['놀람', 4],
-      ['혐오', 4],
-      ['상처', 1],
-      ['당황', 1],
-      ['불안', 2]
+      ['분노', 0],
+      ['슬픔', 0],
+      ['놀람', 0],
+      ['혐오', 0],
+      ['상처', 0],
+      ['당황', 0],
+      ['불안', 0],
+      ['기쁨', 0],
+      ['행복', 0],
+      ['중립', 0]
     ]
   }]
 });
@@ -544,26 +865,27 @@ Highcharts.chart('EmotionFinalChart', {
 
 <!-- 감성 문장별 상세결과 -->
 <script>
-Highcharts.chart('SensitivitySentenceChart', {
+const SensitivitySentenceChart = Highcharts.chart('SensitivitySentenceChart', {
 
 	  title: {
 	    text: '문장별 상세결과'
 	  },
-
+	  credits: {enabled: false},
 	  subtitle: {
 	    text: ''
 	  },
 
 	  yAxis: {
 	    title: {
-	      text: 'Number of Employees'
+	      text: 'emotion score'
 	    }
 	  },
 
 	  xAxis: {
 	    accessibility: {
-	      rangeDescription: 'Range: 2010 to 2017'
-	    }
+	      rangeDescription: 'Range: 1 to 30'
+	    },
+        tickInterval: 1
 	  },
 
 	  legend: {
@@ -577,19 +899,19 @@ Highcharts.chart('SensitivitySentenceChart', {
 	      label: {
 	        connectorAllowed: false
 	      },
-	      pointStart: 2010
+	      pointStart: 1
 	    }
 	  },
 
 	  series: [{
 	    name: '긍정',
-	    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+	    data: [0]
 	  }, {
 	    name: '부정',
-	    data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
+	    data: [0]
 	  }, {
 	    name: '중립',
-	    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+	    data: [0]
 	  }],
 
 	  responsive: {
@@ -613,26 +935,27 @@ Highcharts.chart('SensitivitySentenceChart', {
 
 <!-- 감성 싱글턴 상세결과 -->
 <script>
-Highcharts.chart('SensitivitySingleChart', {
+const SensitivitySingleChart = Highcharts.chart('SensitivitySingleChart', {
 
 	  title: {
 	    text: '싱글턴 상세결과'
 	  },
-
+	  credits: {enabled: false},
 	  subtitle: {
 	    text: ''
 	  },
 
 	  yAxis: {
 	    title: {
-	      text: 'Number of Employees'
+	      text: 'emotion score'
 	    }
 	  },
 
 	  xAxis: {
 	    accessibility: {
-	      rangeDescription: 'Range: 2010 to 2017'
-	    }
+	      rangeDescription: 'Range: 1 to 30'
+	    },
+        tickInterval: 1
 	  },
 
 	  legend: {
@@ -646,19 +969,19 @@ Highcharts.chart('SensitivitySingleChart', {
 	      label: {
 	        connectorAllowed: false
 	      },
-	      pointStart: 2010
+	      pointStart: 1
 	    }
 	  },
 
 	  series: [{
 		    name: '긍정',
-		    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+		    data: [0]
 		  }, {
 		    name: '부정',
-		    data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
+		    data: [0]
 		  }, {
 		    name: '중립',
-		    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+		    data: [0]
 		  }],
 		  
 	  responsive: {
@@ -682,26 +1005,27 @@ Highcharts.chart('SensitivitySingleChart', {
 
 <!-- 감성 멀티턴 상세결과 -->
 <script>
-Highcharts.chart('SensitivityMultiChart', {
+const SensitivityMultiChart = Highcharts.chart('SensitivityMultiChart', {
 
 	  title: {
 	    text: '멀티턴 상세결과'
 	  },
-
+	  credits: {enabled: false},
 	  subtitle: {
 	    text: ''
 	  },
 
 	  yAxis: {
 	    title: {
-	      text: 'Number of Employees'
+	      text: 'emotion score'
 	    }
 	  },
 
 	  xAxis: {
 	    accessibility: {
-	      rangeDescription: 'Range: 2010 to 2017'
-	    }
+	      rangeDescription: 'Range: 1 to 30'
+	    },
+        tickInterval: 1
 	  },
 
 	  legend: {
@@ -715,19 +1039,19 @@ Highcharts.chart('SensitivityMultiChart', {
 	      label: {
 	        connectorAllowed: false
 	      },
-	      pointStart: 2010
+	      pointStart: 1
 	    }
 	  },
 
 	  series: [{
 		    name: '긍정',
-		    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+		    data: [0]
 		  }, {
 		    name: '부정',
-		    data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
+		    data: [0]
 		  }, {
 		    name: '중립',
-		    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+		    data: [0]
 		  }],
 
 	  responsive: {
@@ -750,7 +1074,7 @@ Highcharts.chart('SensitivityMultiChart', {
 
 <!--  감성 최종 상세결과 -->
 <script>
-Highcharts.chart('SensitivityFinalChart', {
+const SensitivityFinalChart = Highcharts.chart('SensitivityFinalChart', {
   chart: {
     type: 'pie',
     options3d: {
@@ -758,6 +1082,7 @@ Highcharts.chart('SensitivityFinalChart', {
       alpha: 45
     }
   },
+  credits: {enabled: false},
   title: {
     text: '최종 상세결과'
   },
@@ -771,11 +1096,11 @@ Highcharts.chart('SensitivityFinalChart', {
     }
   },
   series: [{
-    name: 'Delivered amount',
+    name: 'SentimentResult',
     data: [
-      ['긍정', 8],
-      ['부정', 3],
-      ['중립', 10]
+      ['긍정', 0],
+      ['부정', 0],
+      ['중립', 0]
     ]
   }]
 });
