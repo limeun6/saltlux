@@ -111,15 +111,29 @@
 					processData: false,
 					contentType: false,
 					success: function(data){
-						question = $("input[name=customerInput]").val();
-						$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
-								"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
-								"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
-								"<div class='chat-msg-content'><div class='chat-msg-text'>"+ question +"</div></div></div>");
-						$("input[name=customerInput]").val("");
-						
+						// 욕설을 하였을때의 경고
+						var swear_word =  JSON.parse(data).swear
+						if(swear_word==0){
+							// 욕설에 대한 마스킹 처리
+							question = $("input[name=customerInput]").val();
+							$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
+									"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
+									"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
+									"<div class='chat-msg-content'><div class='chat-msg-text'>"+ "욕설 포함으로 내용이 삭제되었습니다." +"</div></div></div>");
+							$("input[name=customerInput]").val("");
+							//경고창을 띄움
+							alert("욕설을 사용하지 마세요");
+						}else{
+							question = $("input[name=customerInput]").val();
+							$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
+									"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
+									"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
+									"<div class='chat-msg-content'><div class='chat-msg-text'>"+ question +"</div></div></div>");
+							$("input[name=customerInput]").val("");
+							
+						}
 						// 스트레스값을 저장
-						customerStressList.push(JSON.parse(data).Stress);
+						customerStressList.push(JSON.parse(data).stress);
 						
 						// 차트에 갱신
 						customerChartStress.update({
@@ -129,7 +143,8 @@
 								}]
 						});
 						
-						var stress = JSON.parse(data).Stress;
+						// 스트레스에 따른 이모티콘
+						var stress = JSON.parse(data).stress;
 						if (stress>=85){
 							$('.customerEmoji').attr('src', 'assets/img/angry.png')
 						}
@@ -188,21 +203,42 @@
 					processData: false,
 					contentType: false,
 					success: function(data){
-						question = $("input[name=counselorInput]").val();
-						$("#result").append(
-								"<div class='chat-msg owner'>"+
-							     "<div class='chat-msg-profile'>"+
-							      "<img class='chat-msg-img' src='assets/img/operator.png' alt='' />"+
-							      "<div class='chat-msg-date'>" + hours+":"+ minutes + "</div>"+
-							     "</div>"+
-							     "<div class='chat-msg-content'>"+
-							      "<div class='chat-msg-text'>"+question+"</div>"+
-							     "</div>"+
-							    "</div>");
-						$("input[name=counselorInput]").val("");
+						
+						
+						// 욕설을 하였을때의 경고
+						var swear_word =  JSON.parse(data).swear
+						if(swear_word==0){
+							question = $("input[name=counselorInput]").val();
+							$("#result").append(
+									"<div class='chat-msg owner'>"+
+								     "<div class='chat-msg-profile'>"+
+								      "<img class='chat-msg-img' src='assets/img/operator.png' alt='' />"+
+								      "<div class='chat-msg-date'>" + hours+":"+ minutes + "</div>"+
+								     "</div>"+
+								     "<div class='chat-msg-content'>"+
+								      "<div class='chat-msg-text'>"+"욕설 포함으로 내용이 삭제되었습니다."+"</div>"+
+								     "</div>"+
+								    "</div>");
+							$("input[name=counselorInput]").val("");
+							alert("욕설을 사용하지 마세요");
+						} else{
+							question = $("input[name=counselorInput]").val();
+							$("#result").append(
+									"<div class='chat-msg owner'>"+
+								     "<div class='chat-msg-profile'>"+
+								      "<img class='chat-msg-img' src='assets/img/operator.png' alt='' />"+
+								      "<div class='chat-msg-date'>" + hours+":"+ minutes + "</div>"+
+								     "</div>"+
+								     "<div class='chat-msg-content'>"+
+								      "<div class='chat-msg-text'>"+question+"</div>"+
+								     "</div>"+
+								    "</div>");
+							$("input[name=counselorInput]").val("");
+						}
+						
 						
 						// 스트레스값을 저장
-						counselorStressList.push(JSON.parse(data).Stress);
+						counselorStressList.push(JSON.parse(data).stress);
 						
 						// 차트에 갱신
 						counselorChartStress.update({
@@ -212,7 +248,8 @@
 								}]
 						});
 						
-						var stress = JSON.parse(data).Stress;
+						// 스트레스에 따른 이모티콘
+						var stress = JSON.parse(data).stress;
 						if (stress>=85){
 							$('.counselorEmoji').attr('src', 'assets/img/angry.png')
 						}
