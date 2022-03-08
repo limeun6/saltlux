@@ -7,15 +7,16 @@ from collections import OrderedDict
 
 app = Flask(__name__)
 
+# 모델 생성
 sentiment_model = make_model(3)
 emotion_model = make_model(10)
 
+# 대화내용을 각각 저장
 multi_list = []
 customer = ''
 counselor = ''
 total_chat = ''
 start = True
-
 
 @app.route('/')
 def index():
@@ -29,53 +30,77 @@ response : json : java에 반환할 json
 """
 @app.route("/chatting", methods=["POST"])
 def chatting():
+    # 웹에서 입력받은 문장
     customer_chat = request.form.get('customerInput')
     counselor_chat = request.form.get('counselorInput')
     global customer
     global counselor
     global total_chat
+
+    # 입력을 고객이 한 경우
     if customer_chat != None:
+        # 싱글턴의 내용을 저장하기 위해서 과거 상담사가 입력한 내용이 공백이 아닌경우
         if counselor != '':
+            # 멀티턴 대화에 고객, 상담사의 내용을 추가
             multi_list.append([customer, counselor])
+            # 저장소를 초기화
             counselor = ''
             customer = ''
-        input_customer = processing_word(customer_chat)
-        # 0이 반환되면 욕설이 포함되어 있음
-        if(swear_word_check(input_customer)==0):
-            # 욕설인 경우 json에 반환 하는 값
-            swear_word = 0
-        else:
-            swear_word = 1
-        if input_customer != '':
-            customer += input_customer
-            total_chat += input_customer
+        
+        # 입력값 처리
+        input_customer=input_processing(customer_chat)
+        customer += input_customer
 
+        # 고객의 감정값을 취득(문장)
         emotion_result = emotion_predict(emotion_model, input_customer)
+        # 고객의 감성값을 취득(문장)
         sentiment_result = sentiment_predict(sentiment_model, input_customer)
+    # 입력을 상담사가 한 경우
     else:
-        input_counselor = processing_word(counselor_chat)
-        if input_counselor != '':
-            counselor += input_counselor
-            total_chat += input_counselor
+        # 입력값 처리
+        input_counselor=input_processing(counselor_chat)
+        counselor=input_counselor
 
-        # 0이 반환되면 욕설이 포함되어 있음
-        if(swear_word_check(input_counselor)==0):
-            # 욕설인 경우 json에 반환 하는 값
-            swear_word = 0
-        else:
-            swear_word = 1
-
+        # 상담사의 감정값을 취득(멀티턴)
         emotion_result = emotion_predict(emotion_model, total_chat)
+        # 상담사의 감성값을 취득(멀티턴)
         sentiment_result = sentiment_predict(sentiment_model, total_chat)
+    
+    # 저장값 확인
+    print(customer)
+    print(counselor)
+    print(total_chat)
+    print(multi_list)
 
-    print(stress_score(emotion_result, sentiment_result))
-
-    result = make_dict(emotion_result, sentiment_result,swear_word)
+    # 웹으로 반환할 값을 json으로 생성
+    result = make_dict(emotion_result, sentiment_result, swear_word)
     result = json.dumps(result, ensure_ascii=False).encode('utf8')
     response = make_response(result)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
+"""
+입력내용 공통처리부분 함수화
+input_data : str : 입력된 문장
+input_sentence : str : 공통처리 후 문장
+"""
+def input_processing(input_data):
+    """
+    맞춤법처리, 욕설확인, 토탈값 저장처리
+    """
+    global swear_word
+    global total_chat
+    # 맞춤법 띄어쓰기
+    input_sentence = processing_word(input_data)
+
+    # swear_word=0일경우 욕설이 포함되어 있음
+    swear_word = swear_word_check(input_sentence)
+
+    # 상담사가 입력한 내용이 공백이 아닌 경우
+    if input_sentence != '':
+        # 멀티턴 분석을 위해 값을 저장
+        total_chat += input_sentence
+    return input_sentence
 
 """
 상세보기에 전달할 값 정리
