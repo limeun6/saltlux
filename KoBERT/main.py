@@ -40,26 +40,37 @@ def chatting():
             counselor = ''
             customer = ''
         input_customer = processing_word(customer_chat)
+        # 0이 반환되면 욕설이 포함되어 있음
+        if(swear_word_check(input_customer)==0):
+            # 욕설인 경우 json에 반환 하는 값
+            swear_word = 0
+        else:
+            swear_word = 1
         if input_customer != '':
             customer += input_customer
             total_chat += input_customer
 
         emotion_result = emotion_predict(emotion_model, input_customer)
         sentiment_result = sentiment_predict(sentiment_model, input_customer)
-
-
     else:
         input_counselor = processing_word(counselor_chat)
         if input_counselor != '':
             counselor += input_counselor
             total_chat += input_counselor
 
+        # 0이 반환되면 욕설이 포함되어 있음
+        if(swear_word_check(input_counselor)==0):
+            # 욕설인 경우 json에 반환 하는 값
+            swear_word = 0
+        else:
+            swear_word = 1
+
         emotion_result = emotion_predict(emotion_model, total_chat)
         sentiment_result = sentiment_predict(sentiment_model, total_chat)
 
     print(stress_score(emotion_result, sentiment_result))
 
-    result = make_dict(emotion_result, sentiment_result)
+    result = make_dict(emotion_result, sentiment_result,swear_word)
     result = json.dumps(result, ensure_ascii=False).encode('utf8')
     response = make_response(result)
     response.headers.add("Access-Control-Allow-Origin", "*")

@@ -1,6 +1,16 @@
 import re
 import json
 from collections import OrderedDict
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+#처음 처리 욕 모음 문장화처리
+word_df= pd.read_csv("swear_word.csv")
+swear_sentence=""
+# 단어들을 문장으로 묶음
+for i in word_df['swear_word']:
+    swear_sentence= swear_sentence+" "+i
+
 """
 문장 전처리
 sentence : str : 고객/상담사가 입력한 문장
@@ -38,7 +48,7 @@ def make_sentiment_dict(sentiment_result):
     file_data = {'sentiment': sentiment_dic}
     return file_data
 
-def make_dict(emotion_result, sentiment_result):
+def make_dict(emotion_result, sentiment_result,swear_word):
     file_data = OrderedDict()
 
     emotion = ["anger", "sad", "surprise", "hatred", "hurt", "panic", "anxiety", "joy", "happy", "neutrality"]
@@ -49,7 +59,8 @@ def make_dict(emotion_result, sentiment_result):
 
     file_data["emotion"] = emotion_dic
     file_data["sentiment"] = sentiment_dic
-    file_data["Stress"] = stress_score(emotion_result, sentiment_result)
+    file_data["stress"] = stress_score(emotion_result, sentiment_result)
+    file_data["swear"] = swear_word
 
     return file_data
 
@@ -74,3 +85,29 @@ def stress_score(emotion_result, sentiment_result) -> float:
 
     # 반환값 텐서->float 2자리수에서 반올림
     return round(float(result_score * 100 / 140 * 100 + 50), 2)
+
+"""
+입력 텍스트에 욕이 포함 되어 있는가 확인
+sentence : str : 고객/상담사가 입력한 값
+return : int : 0: 욕설이 포함되어 있는 경우, 1: 욕설 비포함
+
+"""
+def swear_word_check(sentence):
+    """
+    욕설이 포함되어 있을경우 0을 반환
+    """
+    # 초기치 선언 0: 욕설이 포함, 1: 욕설 비포함
+    result =1
+    #비교 리스트화
+    sentence_list=(sentence,swear_sentence)
+    #문장의 벡터화
+    tfidftorizer = TfidfVectorizer()
+    tfidf_matrix= tfidftorizer.fit_transform(sentence_list)
+    # 코사인 계산
+    from sklearn.metrics.pairwise import cosine_similarity
+
+    if cosine_similarity(tfidf_matrix)[0,1]>0.0:
+        result=0
+    else :
+        result=1
+    return result
