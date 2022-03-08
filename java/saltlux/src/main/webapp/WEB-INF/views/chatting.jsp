@@ -46,26 +46,6 @@
 		<!-- 스트레스 차트값 저장공간 -->
 		var counselorStressList=[0];
 		var customerStressList=[0];
-		
-		<!-- 상세보기 전달할 값 저장공간-->
-		var detailData=[0][0];
-		
-		<!-- Json값 정리 함수-->
-		function getListFilter(data,key,value){
-			<!-- 상세보기 전달값 정리 함수-->
-		}
-/* 		function set_chart(data){
-			tmp = data.cate_name;
-			tmp1= data.rate;
-			
-			for(var i=0; i<tmp.length; i++){
-				var data = new Object();
-				data.name = tmp[i];
-				data.y = tmp1[i]*1;
-				dataList.push(data);
-			}
-			console.log(dataList);
-		} */
 	</script>
 	
 	<!-- 비동기요청 -->
@@ -111,7 +91,7 @@
 					processData: false,
 					contentType: false,
 					success: function(data){
-						// 욕설을 하였을때의 경고
+						// 욕설을 하였을때의 처리
 						var swear_word =  JSON.parse(data).swear
 						if(swear_word==0){
 							// 욕설에 대한 마스킹 처리
@@ -119,7 +99,7 @@
 							$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
 									"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
 									"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
-									"<div class='chat-msg-content'><div class='chat-msg-text'>"+ "욕설 포함으로 내용이 삭제되었습니다." +"</div></div></div>");
+									"<div class='chat-msg-content'><div class='chat-msg-text' style='background-color:#FA5858;' >"+ "욕설 포함으로 내용이 삭제되었습니다." +"</div></div></div>");
 							$("input[name=customerInput]").val("");
 							//경고창을 띄움
 							alert("욕설을 사용하지 마세요");
@@ -130,7 +110,6 @@
 									"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
 									"<div class='chat-msg-content'><div class='chat-msg-text'>"+ question +"</div></div></div>");
 							$("input[name=customerInput]").val("");
-							
 						}
 						// 스트레스값을 저장
 						customerStressList.push(JSON.parse(data).stress);
@@ -203,9 +182,7 @@
 					processData: false,
 					contentType: false,
 					success: function(data){
-						
-						
-						// 욕설을 하였을때의 경고
+						// 욕설을 하였을때의 처리
 						var swear_word =  JSON.parse(data).swear
 						if(swear_word==0){
 							question = $("input[name=counselorInput]").val();
@@ -216,7 +193,7 @@
 								      "<div class='chat-msg-date'>" + hours+":"+ minutes + "</div>"+
 								     "</div>"+
 								     "<div class='chat-msg-content'>"+
-								      "<div class='chat-msg-text'>"+"욕설 포함으로 내용이 삭제되었습니다."+"</div>"+
+								      "<div class='chat-msg-text' style='background-color:#FA5858;'>"+"욕설 포함으로 내용이 삭제되었습니다."+"</div>"+
 								     "</div>"+
 								    "</div>");
 							$("input[name=counselorInput]").val("");
