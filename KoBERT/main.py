@@ -1,22 +1,21 @@
 from flask import Flask, render_template, request, jsonify, make_response
-import numpy as np
-import pandas as pd
 import json
+
+from model import *
+from calculation import *
 from collections import OrderedDict
-import calculation
-import model
-
-# 감정/감성 구분
-category_sentiment=0
-category_emotion=1
-
-# 고객/상담사가 입력한 값을 일시저장
-multi_sentence=""
-customer_sentence=""
-counselor_sentence = ""
-
 
 app = Flask(__name__)
+
+sentiment_model = make_model(3)
+emotion_model = make_model(10)
+
+multi_list = []
+customer = ''
+counselor = ''
+total_chat = ''
+start = True
+
 
 @app.route('/')
 def index():
@@ -30,94 +29,124 @@ response : json : java에 반환할 json
 """
 @app.route("/chatting", methods=["POST"])
 def chatting():
-    # 고객의 경우 0, 상담사의 경우 1 을 반환
-    input_selection=0
-    global multi_sentence
-    global customer_sentence
-    global counselor_sentence
+    customer_chat = request.form.get('customerInput')
+    counselor_chat = request.form.get('counselorInput')
+    global customer
+    global counselor
+    global total_chat
+    if customer_chat != None:
+        if counselor != '':
+            multi_list.append([customer, counselor])
+            counselor = ''
+            customer = ''
+        input_customer = processing_word(customer_chat)
+        if input_customer != '':
+            customer += input_customer
+            total_chat += input_customer
 
-    #자바에서 들어온 값 고객인경우와 카운셀러인 경우 둘중 하나의 값을 저장
-    input_text = request.form.get('customerInput')
-    if input_text==None:
-        input_text = request.form.get('counselorInput')
-        input_selection=1
-        counselor_sentence=input_text
-        input_text = calculation.after_sentence(input_text)
-    else :
-        input_selection=0
-        customer_sentence=input_text
-        input_text = calculation.after_sentence(input_text)
-    
-    if(input_selection==0):
-        # 싱글턴입력값
-        single_sentence=counselor_sentence+" "+customer_sentence
-    
-    # 멀티턴입력값
-    multi_sentence=multi_sentence+" "+input_text
-    
-    # 감성분석결과,결과값3개(p긍정,n부정,m중립)
-    sentiment_result=model.call_model(input_text,category_sentiment)
+        emotion_result = emotion_predict(emotion_model, input_customer)
+        sentiment_result = sentiment_predict(sentiment_model, input_customer)
 
-    # 감정분석결과,결과값10개(분노, 슬픔, 놀람, 혐오, 상처, 당황, 불안, 기쁨, 행복, 중립)
-    emotion_result=model.call_model(input_text,category_emotion)
 
-    # 대화의 한턴이 끝났을 때 싱글턴과 멀티턴 결과를 출력
-    if(input_selection==0):
-        # 싱글턴 감성
-        single_sentiment_result=model.call_model(single_sentence,category_sentiment)
-        # 멀티턴 감성
-        multi_sentiment_result=model.call_model(multi_sentence,category_sentiment)
-        # 싱글턴 감정
-        single_emotion_result=model.call_model(single_sentence,category_emotion)
-        # 멀티턴 감정
-        multi_emotion_result=model.call_model(multi_sentence,category_emotion)
-    
-    #Json으로 값을 정리
-    result = make_json(sentiment_result,emotion_result)
-    
-    #자바에 값을 반환
-    response=make_response(result)
-    response.headers.add("Access-Control-Allow-Origin",	"*")
+    else:
+        input_counselor = processing_word(counselor_chat)
+        if input_counselor != '':
+            counselor += input_counselor
+            total_chat += input_counselor
+
+        emotion_result = emotion_predict(emotion_model, total_chat)
+        sentiment_result = sentiment_predict(sentiment_model, total_chat)
+
+    print(stress_score(emotion_result, sentiment_result))
+
+    result = make_dict(emotion_result, sentiment_result)
+    result = json.dumps(result, ensure_ascii=False).encode('utf8')
+    response = make_response(result)
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
-"""
-모델에서 출력된 결과 값으로 Json생성
-sentiment_list : tensor : 감성 모델의 결과값
-emotion_list : tensor : 감정 모델의 결과값
-result : json : java에 반환할 json
-"""
-def make_json(sentiment_list, emotion_list):
-    """
-    예측된 감정/감성 문장을 Json형태로 반환
-    """
-    
-    # 감성/감정 정의
-    emotion=["anger","sad","surprise","hatred","hurt","panic","anxiety","joy","happy","neutrality"]
-    sentiment=["positive","negative","middle"]
-    
-    #tensor를 list 로 변환
-    sentiment_result_list=sentiment_list.tolist()
-    emotion_result_list=emotion_list.tolist()
-    file_data = OrderedDict()
-    sentiment_dic={}
-    emotion_dic={}
-    
-    #emotion을 딕셔너리화
-    for i in range(len(emotion_result_list)):
-        emotion_dic[emotion[i]]=emotion_result_list[i]
-    
-    #sentiment 딕셔너리화
-    for i in range(len(sentiment_result_list)):
-        sentiment_dic[sentiment[i]]=sentiment_result_list[i]
 
-    #Json으로 변환
-    file_data["emotion"]=emotion_dic
-    file_data["sentiment"]=sentiment_dic
-    file_data["Stress"]=calculation.stress_score(emotion_list, sentiment_list)
-    
-    result=json.dumps(file_data,ensure_ascii=False).encode('utf8')
+"""
+상세보기에 전달할 값 정리
+response : json : java에 반환할 json
+"""
+@app.route("/resultDetail", methods=["GET", 'POST'])
+def detail():
+    total_sentence_emotion = []
+    total_sentence_sentiment = []
+    total_single_emotion = []
+    total_single_sentiment = []
+    total_multi_emotion = []
+    total_multi_sentiment = []
 
-    return result
+    multi_chatting = ''
+    for i in multi_list:
+        total_sentence_emotion.append(emotion_predict(emotion_model, i[0]))
+        total_sentence_emotion.append(emotion_predict(emotion_model, i[1]))
+        total_sentence_sentiment.append(sentiment_predict(sentiment_model, i[0]))
+        total_sentence_sentiment.append(sentiment_predict(sentiment_model, i[1]))
+
+        total_single_emotion.append(emotion_predict(emotion_model, i[0]+i[1]))
+        total_single_sentiment.append(sentiment_predict(sentiment_model, i[0] + i[1]))
+        multi_chatting += i[0] + i[1]
+        total_multi_emotion.append(emotion_predict(emotion_model, multi_chatting))
+        total_multi_sentiment.append(sentiment_predict(sentiment_model, multi_chatting))
+
+    sentence_emotion_json = {}
+    sentence_sentiment_json = {}
+
+    for key, value in enumerate(total_sentence_emotion):
+        value = make_emotion_dict(value)
+        sentence_emotion_json['number'+str(key)] = value
+
+    for key, value in enumerate(total_sentence_sentiment):
+        value = make_sentiment_dict(value)
+        sentence_sentiment_json['number'+str(key)] = value
+
+    single_emotion_json = {}
+    single_sentiment_json = {}
+
+
+    for key, value in enumerate(total_single_emotion):
+        value = make_emotion_dict(value)
+        single_emotion_json['number'+str(key)] = value
+
+    for key, value in enumerate(total_single_sentiment):
+        value = make_sentiment_dict(value)
+        single_sentiment_json['number'+str(key)] = value
+
+    multi_emotion_json = {}
+    multi_sentiment_json = {}
+
+    for key, value in enumerate(total_multi_emotion):
+        value = make_emotion_dict(value)
+        multi_emotion_json['number'+str(key)] = value
+
+    for key, value in enumerate(total_multi_sentiment):
+        value = make_sentiment_dict(value)
+        multi_sentiment_json['number'+str(key)] = value
+
+    len_multi = len(multi_emotion_json) - 1
+    all_emotion_json = multi_emotion_json['number' + str(len_multi)]
+    all_sentiment_json = multi_sentiment_json['number' + str(len_multi)]
+
+    total_json_list = [sentence_emotion_json, sentence_sentiment_json,
+                       single_emotion_json, single_sentiment_json,
+                       multi_emotion_json, multi_sentiment_json,
+                       all_emotion_json, all_sentiment_json]
+    total_json_name = ['sentence_emotion', 'sentence_sentiment',
+                       'single_emotion', 'single_sentiment',
+                       'multi_emotion', 'multi_sentiment',
+                       'all_emotion', 'all_sentiment']
+    total_json = dict(zip(total_json_name, total_json_list))
+    print(total_json)
+
+    result = json.dumps(total_json, ensure_ascii=False).encode('utf8')
+    response = make_response(result)
+    print(response)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
 
 if __name__== '__main__':
     app.debug=True
