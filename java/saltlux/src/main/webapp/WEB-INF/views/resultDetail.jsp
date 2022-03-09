@@ -81,36 +81,30 @@
 		var sentenceEmotionAnger = [];
 		var sentenceEmotionSad = [];
 		var sentenceEmotionSurprise = [];
-		var sentenceEmotionHatred = [];
 		var sentenceEmotionHurt = [];
 		var sentenceEmotionPanic = [];
 		var sentenceEmotionAnxiety = [];
 		var sentenceEmotionJoy = [];
-		var sentenceEmotionHappy = [];
 		var sentenceEmotionNeutrality = [];
 		
 		// 감정 - 싱글턴
 		var singleEmotionAnger = [];
 		var singleEmotionSad = [];
 		var singleEmotionSurprise = [];
-		var singleEmotionHatred = [];
 		var singleEmotionHurt = [];
 		var singleEmotionPanic = [];
 		var singleEmotionAnxiety = [];
 		var singleEmotionJoy = [];
-		var singleEmotionHappy = [];
 		var singleEmotionNeutrality = [];
 		
 		// 감정 - 멀티턴
 		var multiEmotionAnger = [];
 		var multiEmotionSad = [];
 		var multiEmotionSurprise = [];
-		var multiEmotionHatred = [];
 		var multiEmotionHurt = [];
 		var multiEmotionPanic = [];
 		var multiEmotionAnxiety = [];
 		var multiEmotionJoy = [];
-		var multiEmotionHappy = [];
 		var multiEmotionNeutrality = [];
 		
 		// 감정 - 최종
@@ -169,12 +163,10 @@
 						sentenceEmotionAnger.push(SentenceEmotion[ele][ele2].anger);
 						sentenceEmotionSad.push(SentenceEmotion[ele][ele2].sad);
 						sentenceEmotionSurprise.push(SentenceEmotion[ele][ele2].surprise);
-						sentenceEmotionHatred.push(SentenceEmotion[ele][ele2].hatred);
 						sentenceEmotionHurt.push(SentenceEmotion[ele][ele2].hurt);
 						sentenceEmotionPanic.push(SentenceEmotion[ele][ele2].panic);
 						sentenceEmotionAnxiety.push(SentenceEmotion[ele][ele2].anxiety);
 						sentenceEmotionJoy.push(SentenceEmotion[ele][ele2].joy);
-						sentenceEmotionHappy.push(SentenceEmotion[ele][ele2].happy);
 						sentenceEmotionNeutrality.push(SentenceEmotion[ele][ele2].neutrality);
 					}
 				}
@@ -185,12 +177,10 @@
 						singleEmotionAnger.push(SingleEmotion[ele][ele2].anger);
 						singleEmotionSad.push(SingleEmotion[ele][ele2].sad);
 						singleEmotionSurprise.push(SingleEmotion[ele][ele2].surprise);
-						singleEmotionHatred.push(SingleEmotion[ele][ele2].hatred);
 						singleEmotionHurt.push(SingleEmotion[ele][ele2].hurt);
 						singleEmotionPanic.push(SingleEmotion[ele][ele2].panic);
 						singleEmotionAnxiety.push(SingleEmotion[ele][ele2].anxiety);
 						singleEmotionJoy.push(SingleEmotion[ele][ele2].joy);
-						singleEmotionHappy.push(SingleEmotion[ele][ele2].happy);
 						singleEmotionNeutrality.push(SingleEmotion[ele][ele2].neutrality);
 					}
 				}
@@ -201,12 +191,10 @@
 						multiEmotionAnger.push(MultiEmotion[ele][ele2].anger);
 						multiEmotionSad.push(MultiEmotion[ele][ele2].sad);
 						multiEmotionSurprise.push(MultiEmotion[ele][ele2].surprise);
-						multiEmotionHatred.push(MultiEmotion[ele][ele2].hatred);
 						multiEmotionHurt.push(MultiEmotion[ele][ele2].hurt);
 						multiEmotionPanic.push(MultiEmotion[ele][ele2].panic);
 						multiEmotionAnxiety.push(MultiEmotion[ele][ele2].anxiety);
 						multiEmotionJoy.push(MultiEmotion[ele][ele2].joy);
-						multiEmotionHappy.push(MultiEmotion[ele][ele2].happy);
 						multiEmotionNeutrality.push(MultiEmotion[ele][ele2].neutrality);
 					}
 				}
@@ -220,8 +208,6 @@
 					EmotionResult.push(sad);
 					surprise = ['놀람', AllEmotion.emotion.surprise];
 					EmotionResult.push(surprise);
-					hatred = ['혐오', AllEmotion.emotion.hatred];
-					EmotionResult.push(hatred);
 					hurt = ['상처', AllEmotion.emotion.hurt];
 					EmotionResult.push(hurt);
 					panic = ['당황', AllEmotion.emotion.panic];
@@ -230,8 +216,6 @@
 					EmotionResult.push(anxiety);
 					joy = ['기쁨', AllEmotion.emotion.joy];
 					EmotionResult.push(joy);
-					happy = ['행복', AllEmotion.emotion.happy];
-					EmotionResult.push(happy);
 					neutrality = ['중립', AllEmotion.emotion.neutrality];
 					EmotionResult.push(neutrality);
 					console.log(EmotionResult);
@@ -284,10 +268,7 @@
 					  }, {
 					    name: '놀람',
 					    data: sentenceEmotionSurprise
-					  }, {
-					    name: '혐오',
-					    data: sentenceEmotionHatred
-					  }, {
+					  },{
 					    name: '상처',
 					    data: sentenceEmotionHurt
 					  }, {
@@ -299,10 +280,7 @@
 					  }, {
 					    name: '기쁨',
 					    data: sentenceEmotionJoy
-					  }, {
-					    name: '행복',
-					    data: sentenceEmotionHappy
-					  }, {
+					  },{
 					    name: '중립',
 					    data:sentenceEmotionNeutrality
 					  }]
@@ -319,10 +297,7 @@
 					  }, {
 					    name: '놀람',
 					    data: singleEmotionSurprise
-					  }, {
-					    name: '혐오',
-					    data: singleEmotionHatred
-					  }, {
+					  },{
 					    name: '상처',
 					    data: singleEmotionHurt
 					  }, {
@@ -334,10 +309,7 @@
 					  }, {
 					    name: '기쁨',
 					    data: singleEmotionJoy
-					  }, {
-					    name: '행복',
-					    data: singleEmotionHappy
-					  }, {
+					  },{
 					    name: '중립',
 					    data: singleEmotionNeutrality
 					  }]
@@ -354,10 +326,7 @@
 					  }, {
 					    name: '놀람',
 					    data: multiEmotionSurprise
-					  }, {
-					    name: '혐오',
-					    data: multiEmotionHatred
-					  }, {
+					  },{
 					    name: '상처',
 					    data: multiEmotionHurt
 					  }, {
@@ -369,10 +338,7 @@
 					  }, {
 					    name: '기쁨',
 					    data: multiEmotionJoy
-					  }, {
-					    name: '행복',
-					    data: multiEmotionHappy
-					  }, {
+					  },{
 					    name: '중립',
 					    data: multiEmotionNeutrality
 					  }]
@@ -597,10 +563,7 @@ const EmotionSentenceChart = Highcharts.chart('EmotionSentenceChart', {
 		  }, {
 		    name: '놀람',
 		    data: [0]
-		  }, {
-		    name: '혐오',
-		    data: [0]
-		  }, {
+		  },{
 		    name: '상처',
 		    data: [0]
 		  }, {
@@ -612,10 +575,7 @@ const EmotionSentenceChart = Highcharts.chart('EmotionSentenceChart', {
 		  }, {
 		    name: '기쁨',
 		    data: [0]
-		  }, {
-		    name: '행복',
-		    data: [0]
-		  }, {
+		  },{
 		    name: '중립',
 		    data: [0]
 		  }],
@@ -688,10 +648,7 @@ const EmotionSingleChart = Highcharts.chart('EmotionSingleChart', {
 		  }, {
 		    name: '놀람',
 		    data: [0]
-		  }, {
-		    name: '혐오',
-		    data: [0]
-		  }, {
+		  },{
 		    name: '상처',
 		    data: [0]
 		  }, {
@@ -703,10 +660,7 @@ const EmotionSingleChart = Highcharts.chart('EmotionSingleChart', {
 		  }, {
 		    name: '기쁨',
 		    data: [0]
-		  }, {
-		    name: '행복',
-		    data: [0]
-		  }, {
+		  },{
 		    name: '중립',
 		    data: [0]
 		  }],
@@ -780,9 +734,6 @@ const EmotionMultiChart = Highcharts.chart('EmotionMultiChart', {
 		    name: '놀람',
 		    data: [0]
 		  }, {
-		    name: '혐오',
-		    data: [0]
-		  }, {
 		    name: '상처',
 		    data: [0]
 		  }, {
@@ -793,9 +744,6 @@ const EmotionMultiChart = Highcharts.chart('EmotionMultiChart', {
 		    data: [0]
 		  }, {
 		    name: '기쁨',
-		    data: [0]
-		  }, {
-		    name: '행복',
 		    data: [0]
 		  }, {
 		    name: '중립',
@@ -850,12 +798,10 @@ const EmotionFinalChart = Highcharts.chart('EmotionFinalChart', {
       ['분노', 0],
       ['슬픔', 0],
       ['놀람', 0],
-      ['혐오', 0],
       ['상처', 0],
       ['당황', 0],
       ['불안', 0],
       ['기쁨', 0],
-      ['행복', 0],
       ['중립', 0]
     ]
   }]

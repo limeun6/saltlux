@@ -99,7 +99,7 @@
 							$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
 									"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
 									"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
-									"<div class='chat-msg-content'><div class='chat-msg-text' style='background-color:#FA5858;' >"+ "욕설 포함으로 내용이 삭제되었습니다." +"</div></div></div>");
+									"<div class='chat-msg-content'><div class='chat-msg-text' style='background-color:#FD5F5F;' >"+ "욕설이 감지되어 내용이 삭제되었습니다." +"</div></div></div>");
 							$("input[name=customerInput]").val("");
 							//경고창을 띄움
 							alert("욕설을 사용하지 마세요");
