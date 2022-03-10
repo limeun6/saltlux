@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from konlpy.tag import Kkma
 import pickle
+from hanspell import spell_checker
+from soynlp.normalizer import *
 
 emotion_linear_model = pickle.load(open('emotion_ols.pkl', 'rb'))
 sentiment_linear_model = pickle.load(open('sentiment_ols.pkl', 'rb'))
@@ -14,7 +16,7 @@ word_df = pd.read_csv("swear_word.csv")
 swear_sentence = ""
 # 단어들을 문장으로 묶음
 for i in word_df['swear_word']:
-    swear_sentence = swear_sentence + " " + i
+    swear_sentence = swear_sentence + "," + i
 
 tfidftorizer = TfidfVectorizer()
 kkma = Kkma()
@@ -28,22 +30,25 @@ def processing_word(input_text):
     """
     문장 전처리-특수문자제거, 중복제거, 맞춤법
     """
-    from hanspell import spell_checker
-    # 특수문자 제거
-    remove = re.sub(r"([?!])", r" \1 ", input_text)
-    remove = re.sub(r"([^0-9a-zA-Z가-힣ㄱ-ㅎ!?. ])", '', remove)
-    remove = remove.strip()
-
-    # 중복제거
-
-
-    # 맞춤법
-    check = spell_checker.check(remove)
 
     word = ''
 
-    for key, value in check.words.items():
-        word += ' ' + key
+    for i in input_text.split():
+        # 특수문자 제거
+        remove = re.sub(r"([?!])", r" \1 ", i)
+        remove = re.sub(r"([^0-9a-zA-Z가-힣ㄱ-ㅎ!?. ])", '', remove)
+        remove = remove.strip()
+
+        # 중복제거
+        repeat = repeat_normalize(remove, num_repeats=2)
+
+        # 맞춤법
+        check = spell_checker.check(repeat)
+        spell_check = ''
+
+        for key, value in check.words.items():
+            spell_check += key
+        word = word + ' ' + spell_check
 
     return word
 
@@ -65,7 +70,7 @@ emotion_result : tensor : 감정 결과값
 sentiment_result : tensor : 감정 결과값
 swear_word : int : 욕설 포함 여부
 """
-def make_dict(emotion_result, sentiment_result,swear_word):
+def make_dict(emotion_result, sentiment_result):
     """
     모델을 통해 취득한 감정/감성값을 json으로 정리
     """
@@ -86,7 +91,6 @@ def make_dict(emotion_result, sentiment_result,swear_word):
     print(stress)
     file_data["stress"] = stress[0]
     print(file_data["stress"])
-    file_data["swear"] = swear_word
 
     return file_data
 
@@ -119,28 +123,28 @@ def stress_score(stress_emotion, stress_sentiment) -> float:
 입력 텍스트에 욕이 포함 되어 있는가 확인
 sentence : str : 고객/상담사가 입력한 값
 return : int : 0: 욕설이 포함되어 있는 경우, 1: 욕설 비포함
-
 """
-def swear_word_check(sentence):
-    """
-    욕설이 포함되어 있을경우 0을 반환
-    """
-    # 초기치 선언 0: 욕설이 포함, 1: 욕설 비포함
-    result =1
-    # 형태소분석
-    sentence_word=""
-    # 문장의 명사만을 돌려받음
-    sentence_word_list = kkma.nouns(sentence)
-    for i in sentence_word_list:
-        sentence_word = sentence_word+" "+i
-    #비교 리스트화
-    sentence_list = (sentence_word, swear_sentence)
-    #문장의 벡터화
-    tfidf_matrix = tfidftorizer.fit_transform(sentence_list)
-    # 코사인 계산
-    from sklearn.metrics.pairwise import cosine_similarity
-    if cosine_similarity(tfidf_matrix)[0, 1] > 0.0:
-        result = 0
-    else:
-        result = 1
-    return result
+#
+# def swear_word_check(sentence):
+#     """
+#     # 욕설이 포함되어 있을경우 0을 반환
+#     """
+#     # 초기치 선언 0: 욕설이 포함, 1: 욕설 비포함
+#     result =1
+#     # 형태소분석
+#     sentence_word=""
+#     # 문장의 명사만을 돌려받음
+#     sentence_word_list = kkma.nouns(sentence)
+#     for i in sentence_word_list:
+#         sentence_word = sentence_word+" "+i
+#     #비교 리스트화
+#     sentence_list = (sentence_word, swear_sentence)
+#     #문장의 벡터화
+#     tfidf_matrix = tfidftorizer.fit_transform(sentence_list)
+#     # 코사인 계산
+#     from sklearn.metrics.pairwise import cosine_similarity
+#     if cosine_similarity(tfidf_matrix)[0, 1] > 0.0:
+#         result = 0
+#     else:
+#         result = 1
+#     return result
