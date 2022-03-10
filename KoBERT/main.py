@@ -16,7 +16,6 @@ multi_list = []
 customer = ''
 counselor = ''
 total_chat = ''
-start = True
 
 @app.route('/')
 def index():
@@ -48,26 +47,38 @@ def chatting():
             customer = ''
         
         # 입력값 처리
-        input_customer=input_processing(customer_chat)
+        input_customer = processing_word(customer_chat)
         customer += input_customer
+        total_chat += input_customer
 
         # 고객의 감정값을 취득(문장)
         emotion_result = emotion_predict(emotion_model, input_customer)
+        print(emotion_result)
         # 고객의 감성값을 취득(문장)
         sentiment_result = sentiment_predict(sentiment_model, input_customer)
+        print(sentiment_result)
+        print(total_chat)
     # 입력을 상담사가 한 경우
     else:
         # 입력값 처리
-        input_counselor=input_processing(counselor_chat)
-        counselor=input_counselor
+        input_counselor = processing_word(counselor_chat)
+        counselor = input_counselor
+        total_chat += input_counselor
 
         # 상담사의 감정값을 취득(멀티턴)
         emotion_result = emotion_predict(emotion_model, total_chat)
         # 상담사의 감성값을 취득(멀티턴)
         sentiment_result = sentiment_predict(sentiment_model, total_chat)
+    
+    # 저장값 확인
+    # print(customer)
+    # print(counselor)
+    # print(total_chat)
+    # print(multi_list)
 
     # 웹으로 반환할 값을 json으로 생성
-    result = make_dict(emotion_result, sentiment_result, swear_word)
+    result = make_dict(emotion_result, sentiment_result)
+    print(result)
     result = json.dumps(result, ensure_ascii=False).encode('utf8')
     response = make_response(result)
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -78,30 +89,30 @@ def chatting():
 input_data : str : 입력된 문장
 input_sentence : str : 공통처리 후 문장
 """
-def input_processing(input_data):
-    """
-    맞춤법처리, 욕설확인, 토탈값 저장처리
-    """
-    global swear_word
-    global total_chat
-    # 맞춤법 띄어쓰기
-    input_sentence = processing_word(input_data)
-
-    # swear_word=0일경우 욕설이 포함되어 있음
-    swear_word = swear_word_check(input_sentence)
-
-    # 상담사가 입력한 내용이 공백이 아닌 경우
-    if input_sentence != '':
-        # 멀티턴 분석을 위해 값을 저장
-        total_chat += input_sentence
-    return input_sentence
+# def input_processing(input_data):
+#     """
+#     맞춤법처리, 욕설확인, 토탈값 저장처리
+#     """
+#     global swear_word
+#     global total_chat
+#     # 맞춤법 띄어쓰기
+#     input_sentence = processing_word(input_data)
+#
+#     # swear_word=0일경우 욕설이 포함되어 있음
+#     swear_word = swear_word_check(input_sentence)
+#
+#     # 상담사가 입력한 내용이 공백이 아닌 경우
+#     if input_sentence != '':
+#         # 멀티턴 분석을 위해 값을 저장
+#         total_chat += input_sentence
+#     return input_sentence
 
 """
 상세보기에 전달할 값 정리
 response : json : java에 반환할 json
 """
 @app.route("/resultDetail", methods=["GET", 'POST'])
-def detail():    
+def detail():
     total_sentence_emotion = []
     total_sentence_sentiment = []
     total_single_emotion = []
@@ -156,9 +167,14 @@ def detail():
         value = make_sentiment_dict(value)
         multi_sentiment_json['number'+str(key)] = value
 
-    len_multi = len(multi_emotion_json) - 1
-    all_emotion_json = multi_emotion_json['number' + str(len_multi)]
-    all_sentiment_json = multi_sentiment_json['number' + str(len_multi)]
+    if len(multi_emotion_json) == 0:
+        len_multi = 0
+        all_emotion_json = {}
+        all_sentiment_json = {}
+    else:
+        len_multi = len(multi_emotion_json) - 1
+        all_emotion_json = multi_emotion_json['number' + str(len_multi)]
+        all_sentiment_json = multi_sentiment_json['number' + str(len_multi)]
 
     total_json_list = [sentence_emotion_json, sentence_sentiment_json,
                        single_emotion_json, single_sentiment_json,
