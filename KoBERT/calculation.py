@@ -4,14 +4,18 @@ from collections import OrderedDict
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from konlpy.tag import Kkma
+import pickle
+
+emotion_linear_model = pickle.load(open('emotion_ols.pkl', 'rb'))
+sentiment_linear_model = pickle.load(open('sentiment_ols.pkl', 'rb'))
 
 #처음 처리 욕 모음 문장화처리
-word_df= pd.read_csv("swear_word.csv")
-swear_sentence=""
+word_df = pd.read_csv("swear_word.csv")
+swear_sentence = ""
 
 # 단어들을 문장으로 묶음
 for i in word_df['swear_word']:
-    swear_sentence= swear_sentence+" "+i
+    swear_sentence = swear_sentence + " " + i
 
 tfidftorizer = TfidfVectorizer()
 kkma = Kkma()
@@ -76,7 +80,10 @@ def make_dict(emotion_result, sentiment_result,swear_word):
     # jso에 값 추가
     file_data["emotion"] = emotion_dic
     file_data["sentiment"] = sentiment_dic
-    file_data["stress"] = stress_score(emotion_result, sentiment_result)
+    stress = stress_score(emotion_result, sentiment_result)
+    print(stress)
+    file_data["stress"] = stress[0]
+    print(file_data["stress"])
     file_data["swear"] = swear_word
 
     return file_data
@@ -87,21 +94,24 @@ emotion_result : tensor : 감정 결과
 sentiment_result : tensor : 감성 결과값
 return : float : 스트레스값
 """
-def stress_score(emotion_result, sentiment_result) -> float:
-    '''
-    감성의 결과에 따라 상담사 및 고객의 심리점수를 계산하여 반환한다.
-    '''
-    negative = sum(emotion_result[0:8])
-    positive = sum(emotion_result[8:10])
-    if sentiment_result.argmax() == 0:
-        result_score = 0.7 * positive - 0.3 * negative
-    elif sentiment_result.argmax() == 1:
-        result_score = 0.3 * positive - 0.7 * negative
-    elif sentiment_result.argmax() == 2:
-        result_score = 0.5 * positive - 0.5 * negative
-
-    # 반환값 텐서->float 2자리수에서 반올림
-    return round(float(result_score * 100 / 140 * 100 + 50), 2)
+def stress_score(stress_emotion, stress_sentiment) -> float:
+    stress_emotion = stress_emotion.tolist()
+    stress_sentiment = stress_sentiment.tolist()
+    emotion_cols=['anger', 'sad', 'surprise', 'hurt', 'panic', 'anxiety', 'joy', 'neutrality']
+    sentiment_cols = ['positive', 'negative', 'neutrality']
+    emotion_result = pd.DataFrame([stress_emotion], columns=emotion_cols)
+    sentiment_result = pd.DataFrame([stress_sentiment], columns=sentiment_cols)
+    linear_result_emotion = emotion_linear_model.predict(emotion_result[emotion_cols])
+    linear_result_sentiment = sentiment_linear_model.predict(sentiment_result[sentiment_cols])
+    if linear_result_emotion[0] < 0 :
+      linear_result_emotion[0] = 0
+    if linear_result_emotion[0] > 4 :
+      linear_result_emotion[0] = 4
+    if linear_result_sentiment[0] < 0 :
+      linear_result_sentiment[0] = 0
+    if linear_result_sentiment[0] > 4 :
+      linear_result_sentiment[0] = 4
+    return round((linear_result_emotion*0.3 + linear_result_sentiment*0.7) * 25,2)
 
 """
 입력 텍스트에 욕이 포함 되어 있는가 확인
@@ -118,17 +128,17 @@ def swear_word_check(sentence):
     # 형태소분석
     sentence_word=""
     # 문장의 명사만을 돌려받음
-    sentence_word_list =kkma.nouns(sentence)
+    sentence_word_list = kkma.nouns(sentence)
     for i in sentence_word_list:
-        sentence_word=sentence_word+" "+i
+        sentence_word = sentence_word+" "+i
     #비교 리스트화
-    sentence_list=(sentence_word,swear_sentence)
+    sentence_list = (sentence_word, swear_sentence)
     #문장의 벡터화
-    tfidf_matrix= tfidftorizer.fit_transform(sentence_list)
+    tfidf_matrix = tfidftorizer.fit_transform(sentence_list)
     # 코사인 계산
     from sklearn.metrics.pairwise import cosine_similarity
-    if cosine_similarity(tfidf_matrix)[0,1]>0.0:
-        result=0
-    else :
-        result=1
+    if cosine_similarity(tfidf_matrix)[0, 1] > 0.0:
+        result = 0
+    else:
+        result = 1
     return result
