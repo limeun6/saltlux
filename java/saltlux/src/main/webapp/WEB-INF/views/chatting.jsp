@@ -9,7 +9,7 @@
 %>
 
 <!DOCTYPE html>
-<html lang="en" >
+<html>
 <head>
 	<meta charset="UTF-8">
 	<title>Saltlux three jo - Chatting</title>
@@ -18,6 +18,20 @@
 
 	<!-- bootstrap -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	
+	<style>
+		#counselorChartStress {
+			width: 100%;
+			height: 230px;
+			max-width: 100%;
+		}
+		
+		#customerChartStress {
+			width: 100%;
+			height: 230px;
+			max-width: 100%;
+		}
+	</style>
 	
 	<!-- highcharts Resources -->
 	<script src="https://code.highcharts.com/highcharts.js"></script>
@@ -28,234 +42,309 @@
 	<!-- Ajax -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	
-	<!-- 그래프의 Styles -->
-	<style>
-	#counselorChartStress {
-	  width: 100%;
-  	  height: 230px;
-	  max-width: 100%;
-	}
-	#customerChartStress {
-	  width: 100%;
-  	  height: 230px;
-	  max-width: 100%;
-	}
-	</style>
-	
 	<script>
 		<!-- 스트레스 차트값 저장공간 -->
-		var counselorStressList=[0];
-		var customerStressList=[0];
-	</script>
-	
-	<!-- 비동기요청 -->
-	<script>
-	$(document).ready(function(){
-		$("#customerInput").keydown(function (key){
-			if (key.keyCode == 13){
-				$("#customerInputBtn").click();
-			}
-		});
+		var counselorStressList = [0];
+		var customerStressList = [0];
 		
-		$("#counselorInput").keydown(function (key){
-			if (key.keyCode == 13){
-				$("#counselorInputBtn").click();
-			}
-		});
-	});
-	
-	$(function(){		
-		$("#customerInputBtn").click(function(){
-			if ($("#customerInput").val()==''){
-				alert("내용을 입력하세요.")
-			}
-			else{
-				req_url = "http://localhost:5000/chatting"
-				var form = $("#form1")[0];
-				var form_data = new FormData(form);
-				var isScrollUp = false;
-				var lastScrollTop;
-				var divChat = document.getElementById('div_chat');
-				
-				var now = new Date();	// 현재 날짜 및 시간
-				var hours = now.getHours();	// 시간
-				var minutes = now.getMinutes();	// 분
-				var seconds = now.getSeconds();	// 초
-				
-				// 비동기요청
-				$.ajax({
-					url:req_url,
-					async: true,
-					type: "POST",
-					data: form_data,
-					processData: false,
-					contentType: false,
-					success: function(data){
-						// 욕설을 하였을때의 처리
-						var swear_word =  JSON.parse(data).swear
-						if(swear_word==0){
-							// 욕설에 대한 마스킹 처리
-							question = $("input[name=customerInput]").val();
-							$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
-									"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
-									"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
-									"<div class='chat-msg-content'><div class='chat-msg-text' style='background-color:#FD5F5F;' >"+ "욕설이 감지되어 내용이 삭제되었습니다." +"</div></div></div>");
-							$("input[name=customerInput]").val("");
-							//경고창을 띄움
-							alert("욕설을 사용하지 마세요");
-						}else{
-							question = $("input[name=customerInput]").val();
-							$("#result").append("<div class='chat-msg'><div class='chat-msg-profile'>"+
-									"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />"+
-									"<div class='chat-msg-date'>" + hours+":"+minutes + "</div></div>"+
-									"<div class='chat-msg-content'><div class='chat-msg-text'>"+ question +"</div></div></div>");
-							$("input[name=customerInput]").val("");
-						}
-						// 스트레스값을 저장
-						customerStressList.push(JSON.parse(data).stress);
-						
-						// 차트에 갱신
-						customerChartStress.update({
-							series: [{
-								name: 'Stress',
-								data: customerStressList
-								}]
-						});
-						
-						// 스트레스에 따른 이모티콘
-						var stress = JSON.parse(data).stress;
-						if (stress>=85){
-							$('.customerEmoji').attr('src', 'assets/img/angry.png')
-						}
-						else if (stress>=60){
-							$('.customerEmoji').attr('src', 'assets/img/sad.png')
-						}
-						else if (stress>=30){
-							$('.customerEmoji').attr('src', 'assets/img/soso.png')
-						}
-						else{
-							$('.customerEmoji').attr('src', 'assets/img/smile.png')
-						}
-						
-						// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
-					    if (!isScrollUp) {
-					      $('#div_chat').animate({
-					        scrollTop: divChat.scrollHeight - divChat.clientHeight
-					      }, 100);
-					    }
-					},
-					// 애러 발생시 경고창
-					error: function(e){
-						alert(e);
-					}
-				})
-			}
-		})
-	})
+		var warningCount = 0;
+		
+		<!-- 욕설 리스트 불러오기-->
+		var swear_words_arr = new Array();
 	</script>
 	
 	<script>
-	$(function(){
-		$("#counselorInputBtn").click(function(){
-			if ($("#counselorInput").val()==''){
-				alert("내용을 입력하세요.")
-			}
-			else{			
-				req_url = "http://localhost:5000/chatting"
-				var form = $("#form2")[0];
-				var form_data = new FormData(form);
-				var isScrollUp = false;
-				var lastScrollTop;
-				var divChat = document.getElementById('div_chat');
-				
-				var now = new Date();	// 현재 날짜 및 시간
-				var hours = now.getHours();	// 시간
-				var minutes = now.getMinutes();	// 분
-				var seconds = now.getSeconds();	// 초
-				
-				// 비동기요청
-				$.ajax({
-					url:req_url,
-					async: true,
-					type: "POST",
-					data: form_data,
-					processData: false,
-					contentType: false,
-					success: function(data){
-						// 욕설을 하였을때의 처리
-						var swear_word =  JSON.parse(data).swear
-						if(swear_word==0){
-							question = $("input[name=counselorInput]").val();
-							$("#result").append(
-									"<div class='chat-msg owner'>"+
-								     "<div class='chat-msg-profile'>"+
-								      "<img class='chat-msg-img' src='assets/img/operator.png' alt='' />"+
-								      "<div class='chat-msg-date'>" + hours+":"+ minutes + "</div>"+
-								     "</div>"+
-								     "<div class='chat-msg-content'>"+
-								      "<div class='chat-msg-text' style='background-color:#FA5858;'>"+"욕설 포함으로 내용이 삭제되었습니다."+"</div>"+
-								     "</div>"+
-								    "</div>");
-							$("input[name=counselorInput]").val("");
-							alert("욕설을 사용하지 마세요");
-						} else{
-							question = $("input[name=counselorInput]").val();
-							$("#result").append(
-									"<div class='chat-msg owner'>"+
-								     "<div class='chat-msg-profile'>"+
-								      "<img class='chat-msg-img' src='assets/img/operator.png' alt='' />"+
-								      "<div class='chat-msg-date'>" + hours+":"+ minutes + "</div>"+
-								     "</div>"+
-								     "<div class='chat-msg-content'>"+
-								      "<div class='chat-msg-text'>"+question+"</div>"+
-								     "</div>"+
-								    "</div>");
-							$("input[name=counselorInput]").val("");
-						}
-						
-						
-						// 스트레스값을 저장
-						counselorStressList.push(JSON.parse(data).stress);
-						
-						// 차트에 갱신
-						counselorChartStress.update({
-							series: [{
-								name: 'Stress',
-								data: counselorStressList
-								}]
-						});
-						
-						// 스트레스에 따른 이모티콘
-						var stress = JSON.parse(data).stress;
-						if (stress>=85){
-							$('.counselorEmoji').attr('src', 'assets/img/angry.png')
-						}
-						else if (stress>=60){
-							$('.counselorEmoji').attr('src', 'assets/img/sad.png')
-						}
-						else if (stress>=30){
-							$('.counselorEmoji').attr('src', 'assets/img/soso.png')
-						}
-						else{
-							$('.counselorEmoji').attr('src', 'assets/img/smile.png')
-						}
-						
-						// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
-					    if (!isScrollUp) {
-					      $('#div_chat').animate({
-					        scrollTop: divChat.scrollHeight - divChat.clientHeight
-					      }, 100);
-					    }
-					},
+		$(document).ready(function(){
+			<!-- 엔터키 처리 -->
+			$("#customerInput").keydown(function (key){
+				if (key.keyCode == 13){
+					$("#customerInputBtn").click();
+				}
+			});
+			
+			<!-- 엔터키 처리 -->			
+			$("#counselorInput").keydown(function (key){
+				if (key.keyCode == 13){
+					$("#counselorInputBtn").click();
+				}
+			});
+			
+			<!-- 비속어 사전 읽기 -->
+			$("#swearList").load("swear_word.txt", function(txt, status) {
+		        if (status == "success") {
+		            txt2 = txt.split("\r\n");
+		            var count = 0;
+		            for (var i=0; i<txt2.length; i++){
+		            	if (txt2[i] == "\r" || txt2[i] == "\n"){
+		            		continue;
+		            	} else{
+		            		swear_words_arr[count] = txt2[i];
+		            	}
+		            	count++;
+		            }
+		        }
+		    });
+		});
+	</script>
+	
+	
+	<!-- 고객 비동기 요청 -->
+	<script>
+		$(function() {
+			$("#customerInputBtn").click(function() {
+				if ($("#customerInput").val() == '') {
+					alert("내용을 입력하세요.")
+				} else {
+					req_url = "http://localhost:5000/chatting";
+					var form = $("#form1")[0];
+					var form_data = new FormData(form);
 					
-					// 애러발생시 경고창
-					error: function(e){
-						alert(e);
+					// 마스킹
+					changeSentence = masking(swear_words_arr);
+					
+					// 채팅창 스크롤 관련
+					var isScrollUp = false;
+					var lastScrollTop;
+					var divChat = document.getElementById('div_chat');
+					
+					var now = new Date();	// 현재 날짜 및 시간
+					var hours = now.getHours();	// 시간
+					var minutes = now.getMinutes();	// 분
+					var seconds = now.getSeconds();	// 초
+					
+					function processFile(file) {
+					    var reader = new FileReader();
+					    reader.onload = function () {
+					        output.innerText = reader.result;
+					    };
+					    reader.readAsText(file, /* optional */ "euc-kr");
 					}
-				})
-			}
-		})
-	})
+					
+					// 비동기요청
+					$.ajax({
+						url:req_url,
+						async: true,
+						type: "POST",
+						data: form_data,
+						processData: false,
+						contentType: false,
+						success: function(data){
+							//question = $("input[name=customerInput]").val();
+							$("#result").append(
+									"<div class='chat-msg'>" + 
+										"<div class='chat-msg-profile'>" +
+											"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />" +
+											"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" + 
+										"</div>" +
+										"<div class='chat-msg-content'>" + 
+											"<div class='chat-msg-text'>" + changeSentence + "</div>" + 
+										"</div>" + 
+									"</div>");
+							$("input[name=customerInput]").val("");
+							
+							
+							/* // 욕설을 하였을때의 처리
+							var swear_word =  JSON.parse(data).swear
+							if(swear_word==0){
+								// 욕설에 대한 마스킹 처리
+								question = $("input[name=customerInput]").val();
+								$("#result").append(
+										"<div class='chat-msg'>" + 
+											"<div class='chat-msg-profile'>" +
+												"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />" +
+												"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" + 
+											"</div>" +
+											"<div class='chat-msg-content'>" + 
+												"<div class='chat-msg-text' style='background-color:#FD5F5F;' >" + "욕설이 감지되어 내용이 삭제되었습니다." + "</div>" + 
+											"</div>" + 
+										"</div>");
+								$("input[name=customerInput]").val("");
+								
+								//경고창을 띄움
+								alert("욕설을 사용하지 마세요");
+								//customerWarningCount++;
+							}else{
+								question = $("input[name=customerInput]").val();
+								$("#result").append(
+										"<div class='chat-msg'>" + 
+											"<div class='chat-msg-profile'>" +
+												"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />" +
+												"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" + 
+											"</div>" +
+											"<div class='chat-msg-content'>" + 
+												"<div class='chat-msg-text'>" + question + "</div>" + 
+											"</div>" + 
+										"</div>");
+								$("input[name=customerInput]").val("");
+							} */
+							// 스트레스값을 저장
+							customerStressList.push(JSON.parse(data).stress);
+							
+							// 욕설 횟수 체크						
+							//checkSwear(customerWarningCount);
+	
+							// 차트에 갱신
+							customerChartStress.update({
+								series: [{
+									name: 'Stress',
+									data: customerStressList
+								}]
+							});
+							
+							// 스트레스에 따른 이모티콘
+							var stress = JSON.parse(data).stress;
+							if (stress>=85){
+								$('.customerEmoji').attr('src', 'assets/img/angry.png')
+							}
+							else if (stress>=60){
+								$('.customerEmoji').attr('src', 'assets/img/sad.png')
+							}
+							else if (stress>=30){
+								$('.customerEmoji').attr('src', 'assets/img/soso.png')
+							}
+							else{
+								$('.customerEmoji').attr('src', 'assets/img/smile.png')
+							}
+							
+							// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
+						    if (!isScrollUp) {
+						      $('#div_chat').animate({
+						        scrollTop: divChat.scrollHeight - divChat.clientHeight
+						      }, 100);
+						    }
+						},
+						// 애러 발생시 경고창
+						error: function(e){
+							alert(e);
+						}
+					});
+				}
+			});
+		});
+	</script>
+	
+	<!-- 상담사 비동기 요청 -->
+	<script>
+		$(function(){
+			$("#counselorInputBtn").click(function() {
+				if ($("#counselorInput").val() == '') {
+					alert("내용을 입력하세요.");
+				} else {			
+					req_url = "http://localhost:5000/chatting";
+					var form = $("#form2")[0];
+					var form_data = new FormData(form);
+					//changeSentence = masking(swear_words_arr);
+					
+					// 채팅창 스크롤 관련
+					var isScrollUp = false;
+					var lastScrollTop;
+					var divChat = document.getElementById('div_chat');
+					
+					var now = new Date();	// 현재 날짜 및 시간
+					var hours = now.getHours();	// 시간
+					var minutes = now.getMinutes();	// 분
+					var seconds = now.getSeconds();	// 초
+					
+					// 비동기요청
+					$.ajax({
+						url:req_url,
+						async: true,
+						type: "POST",
+						data: form_data,
+						processData: false,
+						contentType: false,
+						success: function(data){
+							question = $("input[name=counselorInput]").val();
+							$("#result").append(
+									"<div class='chat-msg owner'>" + 
+										"<div class='chat-msg-profile'>" +
+											"<img class='chat-msg-img' src='assets/img/operator.png' alt='' />" +
+											"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" + 
+										"</div>" +
+										"<div class='chat-msg-content'>" + 
+											"<div class='chat-msg-text'>" + question + "</div>" + 
+										"</div>" + 
+									"</div>");
+							$("input[name=counselorInput]").val("");
+							//console.log(form_data);
+							
+							/* // 욕설을 하였을때의 처리
+							var swear_word =  JSON.parse(data).swear
+							if(swear_word==0){
+								question = $("input[name=counselorInput]").val();
+								$("#result").append(
+										"<div class='chat-msg owner'>" +
+									    	"<div class='chat-msg-profile'>" +
+									      		"<img class='chat-msg-img' src='assets/img/operator.png' alt='' />" +
+									      		"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" +
+									     	"</div>" +
+									     	"<div class='chat-msg-content'>" +
+									      		"<div class='chat-msg-text' style='background-color:#FA5858;'>" + "욕설 포함으로 내용이 삭제되었습니다.</div>" +
+									     	"</div>" +
+									    "</div>");
+								$("input[name=counselorInput]").val("");
+								alert("욕설을 사용하지 마세요");
+								counselorWarningCount++;
+							} else{
+								question = $("input[name=counselorInput]").val();
+								$("#result").append(
+										"<div class='chat-msg owner'>" +
+									     	"<div class='chat-msg-profile'>" +
+									      		"<img class='chat-msg-img' src='assets/img/operator.png' alt='' />" +
+									      		"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" +
+									     	"</div>" +
+									     	"<div class='chat-msg-content'>" +
+									     		"<div class='chat-msg-text'>" + question + "</div>" +
+									     	"</div>"+
+									    "</div>");
+								$("input[name=counselorInput]").val(""); 
+							}*/
+							
+							// 스트레스값을 저장
+							counselorStressList.push(JSON.parse(data).stress);
+							
+							// 욕설 횟수 체크
+							//checkSwear(counselorWarningCount);
+							
+							// 차트에 갱신
+							counselorChartStress.update({
+								series: [{
+									name: 'Stress',
+									data: counselorStressList
+								}]
+							});
+							
+							// 스트레스에 따른 이모티콘
+							var stress = JSON.parse(data).stress;
+							if (stress>=85){
+								$('.counselorEmoji').attr('src', 'assets/img/angry.png')
+							}
+							else if (stress>=60){
+								$('.counselorEmoji').attr('src', 'assets/img/sad.png')
+							}
+							else if (stress>=30){
+								$('.counselorEmoji').attr('src', 'assets/img/soso.png')
+							}
+							else{
+								$('.counselorEmoji').attr('src', 'assets/img/smile.png')
+							}
+							
+							// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
+						    if (!isScrollUp) {
+						      $('#div_chat').animate({
+						        scrollTop: divChat.scrollHeight - divChat.clientHeight
+						      }, 100);
+						    }
+						},
+						
+						// 애러발생시 경고창
+						error: function(e){
+							alert(e);
+						}
+					});
+				}
+			});
+		});
 	</script>
 	
 	<!-- 상세보기 버튼을  눌렀을때 팝업창을 띄움 -->
@@ -271,8 +360,9 @@
    <!-- partial:index.partial.html -->
    <div class="app">
       <div class="header">
-         <h1><a href="/" style="font-size: 30px; margin: 0; line-height: 1; font-weight: 400; letter-spacing: 2px; color: #5777ba;
-            text-decoration: none;">three jo</a></h1>
+         <h1>
+         	<a href="/" style="font-size: 30px; margin: 0; line-height: 1; font-weight: 400; letter-spacing: 2px; color: #5777ba; text-decoration: none;">three jo</a>
+         </h1>
       </div>
       <div class="wrapper">
          <div class="chat-area">
@@ -298,14 +388,14 @@
 	               <form action="#" method="POST" id="form1">
 	                  <input type="text" name="customerInput" id="customerInput" placeholder="고객 채팅 입력..." />
 	                  <input type="text" style="display:none;">
-	                  <input type="button" value="전송" id="customerInputBtn" class="btn btn-primary" style="border: #9F7AEA; background: #9F7AEA "></button>
+	                  <input type="button" value="전송" id="customerInputBtn" class="btn btn-primary" style="border: #9F7AEA; background: #9F7AEA " />
 	               </form>
 	            </div>
 	            <div id="inputForm2" style="text-align: center;">
 	               <form action="#" method="POST" id="form2">
 	                  <input type="text" name="counselorInput" id="counselorInput" placeholder="상담사 채팅 입력..." />
 	                  <input type="text" style="display:none;">
-	                  <input type="button" value="전송" id="counselorInputBtn" class="btn btn-primary" style="border: #38b2ac; background: #38b2ac"></button>
+	                  <input type="button" value="전송" id="counselorInputBtn" class="btn btn-primary" style="border: #38b2ac; background: #38b2ac" />
 	               </form>
 	            </div>
             </div>
@@ -320,7 +410,7 @@
                </figure>
             </div>
             <div class="detail-area-header">
-            <div class="detail-title">고객 스트레스 지수<span id="customerResultEmoji"><img class="customerEmoji" src="assets/img/soso.png" alt="" style="width:30px; height:30px; margin-left:20px;"/></span></div>
+            <div class="detail-title">고객 불쾌 지수<span id="customerResultEmoji"><img class="customerEmoji" src="assets/img/soso.png" alt="" style="width:30px; height:30px; margin-left:20px;"/></span></div>
             <div class="customerEmoji"></div>
                <figure class="highcharts-figure">
                   <div id="customerChartStress"></div>
@@ -336,9 +426,13 @@
    </div>
    <!-- app -->
    <!-- partial -->
-   <script  src="./script.js"></script>
+   
+   <div class="auto_filter"></div>
+   <script src="./script.js" ></script>
+   
    <%@ include file="./include/footer.jsp" %>
-   <!-- Chart code -->
+
+   <!-- Chart setting -->
    <script>
       const counselorChartStress = Highcharts.chart('counselorChartStress', {
       
@@ -464,3 +558,5 @@
       
       });
    </script>
+
+   

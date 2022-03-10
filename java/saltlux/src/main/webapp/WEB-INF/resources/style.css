@@ -804,6 +804,11 @@ html {
 # Footer
 --------------------------------------------------------------*/
 #footer {
+  /*
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  */
   background: #fff;
   padding: 0 0 30px 0;
   color: #47536e;
@@ -1019,4 +1024,5 @@ html {
     background: #f1f7ff;
 }
 
+<!-- 메인화면 그래프 크기 -->
 
