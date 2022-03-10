@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # 모델 생성
 sentiment_model = make_model(3)
-emotion_model = make_model(10)
+emotion_model = make_model(8)
 
 # 대화내용을 각각 저장
 multi_list = []
@@ -65,12 +65,6 @@ def chatting():
         emotion_result = emotion_predict(emotion_model, total_chat)
         # 상담사의 감성값을 취득(멀티턴)
         sentiment_result = sentiment_predict(sentiment_model, total_chat)
-    
-    # 저장값 확인
-    print(customer)
-    print(counselor)
-    print(total_chat)
-    print(multi_list)
 
     # 웹으로 반환할 값을 json으로 생성
     result = make_dict(emotion_result, sentiment_result, swear_word)
@@ -107,7 +101,7 @@ def input_processing(input_data):
 response : json : java에 반환할 json
 """
 @app.route("/resultDetail", methods=["GET", 'POST'])
-def detail():
+def detail():    
     total_sentence_emotion = []
     total_sentence_sentiment = []
     total_single_emotion = []

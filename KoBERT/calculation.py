@@ -8,6 +8,7 @@ from konlpy.tag import Kkma
 #처음 처리 욕 모음 문장화처리
 word_df= pd.read_csv("swear_word.csv")
 swear_sentence=""
+
 # 단어들을 문장으로 묶음
 for i in word_df['swear_word']:
     swear_sentence= swear_sentence+" "+i
@@ -41,7 +42,7 @@ def processing_word(input_text):
     return word
 
 def make_emotion_dict(emotion_result):
-    emotion = ["anger", "sad", "surprise", "hatred", "hurt", "panic", "anxiety", "joy", "happy", "neutrality"]
+    emotion = ["anger", "sad", "surprise", "hurt", "panic", "anxiety", "joy", "neutrality"]
     emotion_dic = dict(zip(emotion, emotion_result.tolist()))
     file_data = {'emotion': emotion_dic}
     return file_data
@@ -64,7 +65,7 @@ def make_dict(emotion_result, sentiment_result,swear_word):
     """
     file_data = OrderedDict()
     # 감정 항목
-    emotion = ["anger", "sad", "surprise", "hatred", "hurt", "panic", "anxiety", "joy", "happy", "neutrality"]
+    emotion = ["anger", "sad", "surprise", "hurt", "panic", "anxiety", "joy", "neutrality"]
     # 감성 항목
     sentiment = ["positive", "negative", "middle"]
 

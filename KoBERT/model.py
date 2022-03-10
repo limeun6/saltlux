@@ -18,10 +18,10 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 batch_size=32
 
 # 상수선언
-emotion_count=10
+emotion_count=8
 sentiment_count=3
-sentiment_weight="sentiment.pt"
-emotion_weight="emotion.pt"
+sentiment_weight="sentiment4.pt"
+emotion_weight="emotion4.pt"
 
 bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
 
