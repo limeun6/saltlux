@@ -12,7 +12,6 @@ sentiment_linear_model = pickle.load(open('sentiment_ols.pkl', 'rb'))
 #처음 처리 욕 모음 문장화처리
 word_df = pd.read_csv("swear_word.csv")
 swear_sentence = ""
-
 # 단어들을 문장으로 묶음
 for i in word_df['swear_word']:
     swear_sentence = swear_sentence + " " + i
@@ -27,14 +26,17 @@ d2 : str : 처리2단계한 값
 """
 def processing_word(input_text):
     """
-    문장 전처리-특수문자제거,맞춤법
+    문장 전처리-특수문자제거, 중복제거, 맞춤법
     """
     from hanspell import spell_checker
     # 특수문자 제거
     remove = re.sub(r"([?!])", r" \1 ", input_text)
     remove = re.sub(r"([^0-9a-zA-Z가-힣ㄱ-ㅎ!?. ])", '', remove)
     remove = remove.strip()
-    
+
+    # 중복제거
+
+
     # 맞춤법
     check = spell_checker.check(remove)
 

@@ -9,6 +9,8 @@ import os
 
 ## CPU
 device = torch.device("cpu")
+## GPU
+#device = torch.device("cuda:0")
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -16,10 +18,10 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 batch_size=32
 
 # 상수선언
-emotion_count=8
-sentiment_count=3
-sentiment_weight="sentiment4.pt"
-emotion_weight="emotion4.pt"
+emotion_count = 8
+sentiment_count = 3
+sentiment_weight = "sentiment.pt"
+emotion_weight = "emotion.pt"
 
 bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
 
@@ -93,6 +95,7 @@ def make_model(num_class):
         load_model = BERTClassifier(bertmodel, num_classes=num_class, dr_rate=0.5).to(device)
         load_model.load_state_dict(torch.load(model_save_name, map_location=torch.device("cpu")))
         load_model.eval()
+        return load_model
 
     elif num_class == emotion_count:
         bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
@@ -104,9 +107,7 @@ def make_model(num_class):
         load_model = BERTClassifier(bertmodel, num_classes=num_class, dr_rate=0.5).to(device)
         load_model.load_state_dict(torch.load(model_save_name, map_location=torch.device("cpu")))
         load_model.eval()
-
-    return load_model
-
+        return load_model
 """
 감정모델 예측 실행
 sentece : str : 입력할 문장
@@ -138,7 +139,7 @@ def emotion_predict(model, sentence:str):
             logits = i
             logits = logits.detach().cpu().numpy()
 
-    return torch.nn.functional.softmax(out, dim=1)[0]
+    return torch.nn.functional.sigmoid(out)[0]/sum(torch.nn.functional.sigmoid(out)[0])
 
 """
 감성모델 실행
@@ -171,4 +172,4 @@ def sentiment_predict(model, sentence:str):
             logits = i
             logits = logits.detach().cpu().numpy()
 
-    return torch.nn.functional.softmax(out, dim=1)[0]
+    return torch.nn.functional.sigmoid(out)[0]/sum(torch.nn.functional.sigmoid(out)[0])
