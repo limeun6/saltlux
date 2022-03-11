@@ -49,7 +49,7 @@ def chatting():
         # 입력값 처리
         input_customer = processing_word(customer_chat)
         customer += input_customer
-        total_chat += input_customer
+        total_chat += ' ' + input_customer
 
         # 고객의 감정값을 취득(문장)
         emotion_result = emotion_predict(emotion_model, input_customer)
@@ -57,19 +57,18 @@ def chatting():
         # 고객의 감성값을 취득(문장)
         sentiment_result = sentiment_predict(sentiment_model, input_customer)
         print(sentiment_result)
-        print(total_chat)
     # 입력을 상담사가 한 경우
     else:
         # 입력값 처리
         input_counselor = processing_word(counselor_chat)
         counselor = input_counselor
-        total_chat += input_counselor
+        total_chat += ' ' + input_counselor
 
         # 상담사의 감정값을 취득(멀티턴)
         emotion_result = emotion_predict(emotion_model, total_chat)
         # 상담사의 감성값을 취득(멀티턴)
         sentiment_result = sentiment_predict(sentiment_model, total_chat)
-    
+
     # 저장값 확인
     # print(customer)
     # print(counselor)
@@ -89,23 +88,6 @@ def chatting():
 input_data : str : 입력된 문장
 input_sentence : str : 공통처리 후 문장
 """
-# def input_processing(input_data):
-#     """
-#     맞춤법처리, 욕설확인, 토탈값 저장처리
-#     """
-#     global swear_word
-#     global total_chat
-#     # 맞춤법 띄어쓰기
-#     input_sentence = processing_word(input_data)
-#
-#     # swear_word=0일경우 욕설이 포함되어 있음
-#     swear_word = swear_word_check(input_sentence)
-#
-#     # 상담사가 입력한 내용이 공백이 아닌 경우
-#     if input_sentence != '':
-#         # 멀티턴 분석을 위해 값을 저장
-#         total_chat += input_sentence
-#     return input_sentence
 
 """
 상세보기에 전달할 값 정리
@@ -185,15 +167,12 @@ def detail():
                        'multi_emotion', 'multi_sentiment',
                        'all_emotion', 'all_sentiment']
     total_json = dict(zip(total_json_name, total_json_list))
-    print(total_json)
 
     result = json.dumps(total_json, ensure_ascii=False).encode('utf8')
     response = make_response(result)
-    print(response)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
-
-if __name__== '__main__':
-    app.debug=True
+if __name__ == '__main__':
+    app.debug = True
     app.run()

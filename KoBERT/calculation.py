@@ -2,24 +2,12 @@ import re
 import json
 from collections import OrderedDict
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from konlpy.tag import Kkma
 import pickle
 from hanspell import spell_checker
 from soynlp.normalizer import *
 
 emotion_linear_model = pickle.load(open('emotion_ols.pkl', 'rb'))
 sentiment_linear_model = pickle.load(open('sentiment_ols.pkl', 'rb'))
-
-#처음 처리 욕 모음 문장화처리
-word_df = pd.read_csv("swear_word.csv")
-swear_sentence = ""
-# 단어들을 문장으로 묶음
-for i in word_df['swear_word']:
-    swear_sentence = swear_sentence + "," + i
-
-tfidftorizer = TfidfVectorizer()
-kkma = Kkma()
 
 """
 문장 전처리
@@ -45,12 +33,12 @@ def processing_word(input_text):
         # 맞춤법
         check = spell_checker.check(repeat)
         spell_check = ''
-
         for key, value in check.words.items():
-            spell_check += key
+            spell_check += ' ' + key
+        spell_check = re.sub("<span class='violet_text'>", '', spell_check)
         word = word + ' ' + spell_check
 
-    return word
+    return word.lstrip()
 
 def make_emotion_dict(emotion_result):
     emotion = ["anger", "sad", "surprise", "hurt", "panic", "anxiety", "joy", "neutrality"]
@@ -88,9 +76,7 @@ def make_dict(emotion_result, sentiment_result):
     file_data["emotion"] = emotion_dic
     file_data["sentiment"] = sentiment_dic
     stress = stress_score(emotion_result, sentiment_result)
-    print(stress)
     file_data["stress"] = stress[0]
-    print(file_data["stress"])
 
     return file_data
 
@@ -124,27 +110,3 @@ def stress_score(stress_emotion, stress_sentiment) -> float:
 sentence : str : 고객/상담사가 입력한 값
 return : int : 0: 욕설이 포함되어 있는 경우, 1: 욕설 비포함
 """
-#
-# def swear_word_check(sentence):
-#     """
-#     # 욕설이 포함되어 있을경우 0을 반환
-#     """
-#     # 초기치 선언 0: 욕설이 포함, 1: 욕설 비포함
-#     result =1
-#     # 형태소분석
-#     sentence_word=""
-#     # 문장의 명사만을 돌려받음
-#     sentence_word_list = kkma.nouns(sentence)
-#     for i in sentence_word_list:
-#         sentence_word = sentence_word+" "+i
-#     #비교 리스트화
-#     sentence_list = (sentence_word, swear_sentence)
-#     #문장의 벡터화
-#     tfidf_matrix = tfidftorizer.fit_transform(sentence_list)
-#     # 코사인 계산
-#     from sklearn.metrics.pairwise import cosine_similarity
-#     if cosine_similarity(tfidf_matrix)[0, 1] > 0.0:
-#         result = 0
-#     else:
-#         result = 1
-#     return result
