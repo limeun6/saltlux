@@ -61,7 +61,7 @@ def chatting():
     else:
         # 입력값 처리
         input_counselor = processing_word(counselor_chat)
-        counselor = input_counselor
+        counselor += ' ' + input_counselor
         total_chat += ' ' + input_counselor
 
         # 상담사의 감정값을 취득(멀티턴)
@@ -175,4 +175,4 @@ def detail():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    app.run(threaded=True)

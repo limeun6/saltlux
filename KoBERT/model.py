@@ -2,20 +2,19 @@ from kobert import get_tokenizer
 from kobert import get_pytorch_kobert_model
 from torch import nn
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 import gluonnlp as nlp
 import numpy as np
 import os
 
 ## CPU
 device = torch.device("cpu")
-## GPU
-#device = torch.device("cuda:0")
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-#파라미터
-batch_size=32
+
+# 파라미터
+batch_size = 32
 
 # 상수선언
 emotion_count = 8
@@ -23,11 +22,13 @@ sentiment_count = 3
 sentiment_weight = "sentiment.pt"
 emotion_weight = "emotion.pt"
 
-bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
+e_bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache/emotion")
+s_bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache/sentiment")
 
 # 토크나이저
 tokenizer = get_tokenizer()
 tok = nlp.data.BERTSPTokenizer(tokenizer, vocab, lower=False)
+
 
 class BERTDataset(Dataset):
     def __init__(self, dataset, sent_idx, label_idx, bert_tokenizer, max_len,
@@ -39,10 +40,11 @@ class BERTDataset(Dataset):
         self.labels = [np.int32(i[label_idx]) for i in dataset]
 
     def __getitem__(self, i):
-        return (self.sentences[i] + (self.labels[i], ))
+        return (self.sentences[i] + (self.labels[i],))
 
     def __len__(self):
         return (len(self.labels))
+
 
 class BERTClassifier(nn.Module):
     def __init__(self,
@@ -74,47 +76,41 @@ class BERTClassifier(nn.Module):
             out = self.dropout(pooler)
         return self.classifier(out)
 
+
 """
 모델 생성
 num_class : int : 모델 구분을 위한 값 3인경우 감성, 10인경우 감정
 load_model : 결과값
 """
+
+
 def make_model(num_class):
     """
     프로그램 시작시 필요한 모델 생성
     """
-    
+
     if num_class == sentiment_count:
-        bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
-
-        tokenizer = get_tokenizer()
-        tok = nlp.data.BERTSPTokenizer(tokenizer, vocab, lower=False)
-
-        model_save_name = sentiment_weight
-
-        load_model = BERTClassifier(bertmodel, num_classes=num_class, dr_rate=0.5).to(device)
-        load_model.load_state_dict(torch.load(model_save_name, map_location=torch.device("cpu")))
+        load_model = BERTClassifier(e_bertmodel, num_classes=num_class, dr_rate=0.5).to(device)
+        load_model.load_state_dict(torch.load(sentiment_weight, map_location=torch.device("cpu")))
         load_model.eval()
         return load_model
 
     elif num_class == emotion_count:
-        bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
-
-        tokenizer = get_tokenizer()
-        tok = nlp.data.BERTSPTokenizer(tokenizer, vocab, lower=False)
-
-        model_save_name = emotion_weight
-        load_model = BERTClassifier(bertmodel, num_classes=num_class, dr_rate=0.5).to(device)
-        load_model.load_state_dict(torch.load(model_save_name, map_location=torch.device("cpu")))
+        load_model = BERTClassifier(s_bertmodel, num_classes=num_class, dr_rate=0.5).to(device)
+        load_model.load_state_dict(torch.load(emotion_weight, map_location=torch.device("cpu")))
         load_model.eval()
         return load_model
+
+
 """
 감정모델 예측 실행
 sentece : str : 입력할 문장
 model : 불러온 모델
 result : tensor : 결과값
 """
-def emotion_predict(model, sentence:str):
+
+
+def emotion_predict(model, sentence: str):
     """
     문장을 분석해 감정을 예측
     """
@@ -135,11 +131,8 @@ def emotion_predict(model, sentence:str):
 
         out = model(token_ids, valid_length, segment_ids)
 
-        for i in out:
-            logits = i
-            logits = logits.detach().cpu().numpy()
+    return torch.nn.functional.sigmoid(out)[0] / sum(torch.sigmoid(out)[0])
 
-    return torch.nn.functional.sigmoid(out)[0]/sum(torch.nn.functional.sigmoid(out)[0])
 
 """
 감성모델 실행
@@ -147,7 +140,9 @@ sentece : str : 입력할 문장
 model : 불러온 모델
 result : tensor : 결과값
 """
-def sentiment_predict(model, sentence:str):
+
+
+def sentiment_predict(model, sentence: str):
     """
     문장을 분석해 감성을 예측
     """
@@ -168,8 +163,4 @@ def sentiment_predict(model, sentence:str):
 
         out = model(token_ids, valid_length, segment_ids)
 
-        for i in out:
-            logits = i
-            logits = logits.detach().cpu().numpy()
-
-    return torch.nn.functional.sigmoid(out)[0]/sum(torch.nn.functional.sigmoid(out)[0])
+    return torch.nn.functional.sigmoid(out)[0] / sum(torch.sigmoid(out)[0])

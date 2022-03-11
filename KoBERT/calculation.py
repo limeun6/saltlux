@@ -5,6 +5,7 @@ import pandas as pd
 import pickle
 from hanspell import spell_checker
 from soynlp.normalizer import *
+import numpy as np
 
 emotion_linear_model = pickle.load(open('emotion_ols.pkl', 'rb'))
 sentiment_linear_model = pickle.load(open('sentiment_ols.pkl', 'rb'))
@@ -42,13 +43,13 @@ def processing_word(input_text):
 
 def make_emotion_dict(emotion_result):
     emotion = ["anger", "sad", "surprise", "hurt", "panic", "anxiety", "joy", "neutrality"]
-    emotion_dic = dict(zip(emotion, emotion_result.tolist()))
+    emotion_dic = dict(zip(emotion, np.round(emotion_result.tolist(),2)))
     file_data = {'emotion': emotion_dic}
     return file_data
 
 def make_sentiment_dict(sentiment_result):
     sentiment = ["positive", "negative", "middle"]
-    sentiment_dic = dict(zip(sentiment, sentiment_result.tolist()))
+    sentiment_dic = dict(zip(sentiment, np.round(sentiment_result.tolist(),2)))
     file_data = {'sentiment': sentiment_dic}
     return file_data
 
@@ -69,10 +70,10 @@ def make_dict(emotion_result, sentiment_result):
     sentiment = ["positive", "negative", "middle"]
 
     # 항목에 따라 값 설정
-    emotion_dic = dict(zip(emotion, emotion_result.tolist()))
-    sentiment_dic = dict(zip(sentiment, sentiment_result.tolist()))
+    emotion_dic = dict(zip(emotion, np.round(emotion_result.tolist(),2)))
+    sentiment_dic = dict(zip(sentiment, np.round(sentiment_result.tolist(),2)))
 
-    # jso에 값 추가
+    # json에 값 추가
     file_data["emotion"] = emotion_dic
     file_data["sentiment"] = sentiment_dic
     stress = stress_score(emotion_result, sentiment_result)
