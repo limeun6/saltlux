@@ -1,21 +1,15 @@
 from flask import Flask, render_template, request, jsonify, make_response
 import json
+from threading import Thread
 
 from model import *
 from calculation import *
+from multi import *
+from flask_socketio import SocketIO, send
 from collections import OrderedDict
 
 app = Flask(__name__)
-
-# 모델 생성
-sentiment_model = make_model(3)
-emotion_model = make_model(8)
-
-# 대화내용을 각각 저장
-multi_list = []
-customer = ''
-counselor = ''
-total_chat = ''
+total_counselor = {}
 
 @app.route('/')
 def index():
@@ -27,61 +21,31 @@ customerInput : 고객입력값
 counselorInput : 상담사입력값
 response : json : java에 반환할 json
 """
+
 @app.route("/chatting", methods=["POST"])
 def chatting():
-    # 웹에서 입력받은 문장
     customer_chat = request.form.get('customerInput')
     counselor_chat = request.form.get('counselorInput')
-    global customer
-    global counselor
-    global total_chat
+    sep = request.form.get("sep")
 
-    # 입력을 고객이 한 경우
-    if customer_chat != None:
-        # 싱글턴의 내용을 저장하기 위해서 과거 상담사가 입력한 내용이 공백이 아닌경우
-        if counselor != '':
-            # 멀티턴 대화에 고객, 상담사의 내용을 추가
-            multi_list.append([customer, counselor])
-            # 저장소를 초기화
-            counselor = ''
-            customer = ''
-        
-        # 입력값 처리
-        input_customer = processing_word(customer_chat)
-        customer += input_customer
-        total_chat += ' ' + input_customer
-
-        # 고객의 감정값을 취득(문장)
-        emotion_result = emotion_predict(emotion_model, input_customer)
-        print(emotion_result)
-        # 고객의 감성값을 취득(문장)
-        sentiment_result = sentiment_predict(sentiment_model, input_customer)
-        print(sentiment_result)
-    # 입력을 상담사가 한 경우
+    if sep in total_counselor.keys():
+        person = total_counselor[sep]
     else:
-        # 입력값 처리
-        input_counselor = processing_word(counselor_chat)
-        counselor += ' ' + input_counselor
-        total_chat += ' ' + input_counselor
+        total_counselor[sep] = counselor_object()
+        person = total_counselor[sep]
 
-        # 상담사의 감정값을 취득(멀티턴)
-        emotion_result = emotion_predict(emotion_model, total_chat)
-        # 상담사의 감성값을 취득(멀티턴)
-        sentiment_result = sentiment_predict(sentiment_model, total_chat)
-
-    # 저장값 확인
-    # print(customer)
-    # print(counselor)
-    # print(total_chat)
-    # print(multi_list)
-
-    # 웹으로 반환할 값을 json으로 생성
-    result = make_dict(emotion_result, sentiment_result)
-    print(result)
+    if customer_chat != None:
+        result = person.chatting_counselor(customer_chat=customer_chat)
+    else:
+        result = person.chatting_counselor(counselor_chat=counselor_chat)
     result = json.dumps(result, ensure_ascii=False).encode('utf8')
     response = make_response(result)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
+
+
+
 
 """
 입력내용 공통처리부분 함수화
@@ -95,6 +59,8 @@ response : json : java에 반환할 json
 """
 @app.route("/resultDetail", methods=["GET", 'POST'])
 def detail():
+    sep_detail = request.get_json("sep")
+    detail_person = total_counselor[sep_detail]
     total_sentence_emotion = []
     total_sentence_sentiment = []
     total_single_emotion = []
@@ -103,7 +69,7 @@ def detail():
     total_multi_sentiment = []
 
     multi_chatting = ''
-    for i in multi_list:
+    for i in detail_person.multi_list:
         total_sentence_emotion.append(emotion_predict(emotion_model, i[0]))
         total_sentence_emotion.append(emotion_predict(emotion_model, i[1]))
         total_sentence_sentiment.append(sentiment_predict(sentiment_model, i[0]))
@@ -175,4 +141,4 @@ def detail():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(threaded=True)
+    app.run()

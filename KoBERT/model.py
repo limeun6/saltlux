@@ -5,13 +5,9 @@ import torch
 from torch.utils.data import Dataset
 import gluonnlp as nlp
 import numpy as np
-import os
 
-## CPU
+# CPU
 device = torch.device("cpu")
-
-os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # 파라미터
 batch_size = 32
@@ -22,6 +18,7 @@ sentiment_count = 3
 sentiment_weight = "sentiment.pt"
 emotion_weight = "emotion.pt"
 
+# 감정, 감성 모델
 e_bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache/emotion")
 s_bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache/sentiment")
 
@@ -50,7 +47,7 @@ class BERTClassifier(nn.Module):
     def __init__(self,
                  bert,
                  hidden_size=768,
-                 num_classes=10,
+                 num_classes=2,
                  dr_rate=None,
                  params=None):
         super(BERTClassifier, self).__init__()
@@ -77,16 +74,12 @@ class BERTClassifier(nn.Module):
         return self.classifier(out)
 
 
-"""
-모델 생성
-num_class : int : 모델 구분을 위한 값 3인경우 감성, 10인경우 감정
-load_model : 결과값
-"""
-
-
 def make_model(num_class):
     """
     프로그램 시작시 필요한 모델 생성
+    num_class  : int : 모델 구분을 위한 값
+                       3인경우 감성, 8인경우 감정
+    load_model : num_class값에 따라 저장된 모델을 불러옴
     """
 
     if num_class == sentiment_count:
@@ -102,17 +95,12 @@ def make_model(num_class):
         return load_model
 
 
-"""
-감정모델 예측 실행
-sentece : str : 입력할 문장
-model : 불러온 모델
-result : tensor : 결과값
-"""
-
-
 def emotion_predict(model, sentence: str):
     """
     문장을 분석해 감정을 예측
+    sentece : str : 예측할 문장
+    model   : 감정 모델
+    result  : tensor : 결과값
     """
     data = [sentence, '0']
     dataset_another = [data]
@@ -131,20 +119,15 @@ def emotion_predict(model, sentence: str):
 
         out = model(token_ids, valid_length, segment_ids)
 
-    return torch.nn.functional.sigmoid(out)[0] / sum(torch.sigmoid(out)[0])
-
-
-"""
-감성모델 실행
-sentece : str : 입력할 문장
-model : 불러온 모델
-result : tensor : 결과값
-"""
+    return torch.sigmoid(out)[0] / sum(torch.sigmoid(out)[0])
 
 
 def sentiment_predict(model, sentence: str):
     """
     문장을 분석해 감성을 예측
+    sentece : str : 예측할 문장
+    model   : 감성 모델
+    result  : tensor : 결과값
     """
 
     data = [sentence, '0']
@@ -163,4 +146,4 @@ def sentiment_predict(model, sentence: str):
 
         out = model(token_ids, valid_length, segment_ids)
 
-    return torch.nn.functional.sigmoid(out)[0] / sum(torch.sigmoid(out)[0])
+    return torch.sigmoid(out)[0] / sum(torch.sigmoid(out)[0])
