@@ -47,7 +47,7 @@
 		var counselorStressList = [0];
 		var customerStressList = [0];
 		
-		var warningCount = 0;
+		var swearCount = 0;
 		
 		<!-- 욕설 리스트 불러오기-->
 		var swear_words_arr = new Array();
@@ -98,10 +98,7 @@
 					req_url = "http://localhost:5000/chatting";
 					var form = $("#form1")[0];
 					var form_data = new FormData(form);
-					
-					// 마스킹
-					changeSentence = masking(swear_words_arr);
-					
+
 					// 채팅창 스크롤 관련
 					var isScrollUp = false;
 					var lastScrollTop;
@@ -129,8 +126,16 @@
 						processData: false,
 						contentType: false,
 						success: function(data){
-							//question = $("input[name=customerInput]").val();
-							$("#result").append(
+							
+							var stressScore =  JSON.parse(data).stress;
+							
+							// 마스킹
+							changeSentence = masking(swear_words_arr)[0];							
+							swearCount = masking(swear_words_arr)[1];
+							
+							//욕설 감지, 0 없음, 1 있음
+							if (swearCount == 0) {
+								$("#result").append(
 									"<div class='chat-msg'>" + 
 										"<div class='chat-msg-profile'>" +
 											"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />" +
@@ -140,49 +145,35 @@
 											"<div class='chat-msg-text'>" + changeSentence + "</div>" + 
 										"</div>" + 
 									"</div>");
-							$("input[name=customerInput]").val("");
-							
-							
-							/* // 욕설을 하였을때의 처리
-							var swear_word =  JSON.parse(data).swear
-							if(swear_word==0){
-								// 욕설에 대한 마스킹 처리
-								question = $("input[name=customerInput]").val();
+							} else {
 								$("#result").append(
-										"<div class='chat-msg'>" + 
+									"<div class='chat-msg'>" + 
+										"<div class='chat-msg-profile'>" +
+											"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />" +
+											"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" + 
+										"</div>" +
+										"<div class='chat-msg-content'>" + 
+											"<div class='chat-msg-text'>" + changeSentence + "</div>" + 
+										"</div>" + 
+									"</div>" + 
+									"<div class='chat-msg' style='width:90%; justify-content: center; margin:0 auto;'>" +
+										"<div class='chat-msg-content'>" + 
 											"<div class='chat-msg-profile'>" +
-												"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />" +
-												"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" + 
+												"<img class='chat-msg-img' src='assets/img/siren.png' alt=''/ style='margin: 0px 5px 5px 0px; border-radius: 0%;'>" +
 											"</div>" +
-											"<div class='chat-msg-content'>" + 
-												"<div class='chat-msg-text' style='background-color:#FD5F5F;' >" + "욕설이 감지되어 내용이 삭제되었습니다." + "</div>" + 
-											"</div>" + 
-										"</div>");
-								$("input[name=customerInput]").val("");
+											"<div class='chat-msg-text' style='background-color: #FD5F5F; border-radius:20px;'>욕설이 감지되었습니다. 주의하세요. </div>" +
+										"</div>" +
+									"</div>"
+								);
 								
-								//경고창을 띄움
-								alert("욕설을 사용하지 마세요");
-								//customerWarningCount++;
-							}else{
-								question = $("input[name=customerInput]").val();
-								$("#result").append(
-										"<div class='chat-msg'>" + 
-											"<div class='chat-msg-profile'>" +
-												"<img class='chat-msg-img' src='assets/img/girl.png' alt='' />" +
-												"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" + 
-											"</div>" +
-											"<div class='chat-msg-content'>" + 
-												"<div class='chat-msg-text'>" + question + "</div>" + 
-											"</div>" + 
-										"</div>");
-								$("input[name=customerInput]").val("");
-							} */
-							// 스트레스값을 저장
-							customerStressList.push(JSON.parse(data).stress);
+							}
 							
-							// 욕설 횟수 체크						
-							//checkSwear(customerWarningCount);
-	
+							
+							$("input[name=customerInput]").val("");
+						
+							// 스트레스값을 저장
+							customerStressList.push(stressScore);
+
 							// 차트에 갱신
 							customerChartStress.update({
 								series: [{
@@ -233,7 +224,6 @@
 					req_url = "http://localhost:5000/chatting";
 					var form = $("#form2")[0];
 					var form_data = new FormData(form);
-					//changeSentence = masking(swear_words_arr);
 					
 					// 채팅창 스크롤 관련
 					var isScrollUp = false;
@@ -254,6 +244,8 @@
 						processData: false,
 						contentType: false,
 						success: function(data){
+							var stressScore = JSON.parse(data).stress;
+							
 							question = $("input[name=counselorInput]").val();
 							$("#result").append(
 									"<div class='chat-msg owner'>" + 
@@ -266,45 +258,9 @@
 										"</div>" + 
 									"</div>");
 							$("input[name=counselorInput]").val("");
-							//console.log(form_data);
-							
-							/* // 욕설을 하였을때의 처리
-							var swear_word =  JSON.parse(data).swear
-							if(swear_word==0){
-								question = $("input[name=counselorInput]").val();
-								$("#result").append(
-										"<div class='chat-msg owner'>" +
-									    	"<div class='chat-msg-profile'>" +
-									      		"<img class='chat-msg-img' src='assets/img/operator.png' alt='' />" +
-									      		"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" +
-									     	"</div>" +
-									     	"<div class='chat-msg-content'>" +
-									      		"<div class='chat-msg-text' style='background-color:#FA5858;'>" + "욕설 포함으로 내용이 삭제되었습니다.</div>" +
-									     	"</div>" +
-									    "</div>");
-								$("input[name=counselorInput]").val("");
-								alert("욕설을 사용하지 마세요");
-								counselorWarningCount++;
-							} else{
-								question = $("input[name=counselorInput]").val();
-								$("#result").append(
-										"<div class='chat-msg owner'>" +
-									     	"<div class='chat-msg-profile'>" +
-									      		"<img class='chat-msg-img' src='assets/img/operator.png' alt='' />" +
-									      		"<div class='chat-msg-date'>" + hours + ":" + minutes + "</div>" +
-									     	"</div>" +
-									     	"<div class='chat-msg-content'>" +
-									     		"<div class='chat-msg-text'>" + question + "</div>" +
-									     	"</div>"+
-									    "</div>");
-								$("input[name=counselorInput]").val(""); 
-							}*/
 							
 							// 스트레스값을 저장
-							counselorStressList.push(JSON.parse(data).stress);
-							
-							// 욕설 횟수 체크
-							//checkSwear(counselorWarningCount);
+							counselorStressList.push(stressScore);
 							
 							// 차트에 갱신
 							counselorChartStress.update({
@@ -314,19 +270,22 @@
 								}]
 							});
 							
+							var stressComment = document.getElementById("comment");
 							// 스트레스에 따른 이모티콘
-							var stress = JSON.parse(data).stress;
-							if (stress>=85){
-								$('.counselorEmoji').attr('src', 'assets/img/angry.png')
+							if (stressScore >= 80){
+								alert("위험이 감지되었습니다. 주의하세요.");
+								$('.counselorEmoji').attr('src', 'assets/img/angry.png');
+								stressComment.innerHTML = "\" 휴식이 필요합니다. 힘내세요. \"";
 							}
-							else if (stress>=60){
-								$('.counselorEmoji').attr('src', 'assets/img/sad.png')
+							else if (stressScore >= 60){
+								$('.counselorEmoji').attr('src', 'assets/img/sad.png');
 							}
-							else if (stress>=30){
-								$('.counselorEmoji').attr('src', 'assets/img/soso.png')
+							else if (stressScore >= 30){
+								$('.counselorEmoji').attr('src', 'assets/img/soso.png');
+								stressComment.innerHTML = "\" 오늘도 좋은하루 되세요. \"";
 							}
 							else{
-								$('.counselorEmoji').attr('src', 'assets/img/smile.png')
+								$('.counselorEmoji').attr('src', 'assets/img/smile.png');
 							}
 							
 							// 기본적으로 스크롤 최하단으로 이동 (애니메이션 적용)
@@ -403,14 +362,20 @@
          </div>
          <!-- chat-area -->
          <div class="detail-area">
-            <div class="detail-area-header">
-            <div class="detail-title">상담사 스트레스 지수<span id="counselorResultEmoji"><img class="counselorEmoji" src="assets/img/soso.png" alt="" style="width:30px; height:30px; margin-left:20px;"/></span></div>
+            <div class="detail-area-header" style="align-items: flex-start; margin-bottom: 50px;">
+	            <div class="detail-title" style="width: 100%; ">상담사 스트레스 지수
+	            	<span id="counselorResultEmoji"><img class="counselorEmoji" src="assets/img/soso.png" alt="" style="width:30px; height:30px; margin-left:20px; vertical-align: middle;"/></span>
+	            	<span id="comment" style="float: right; margin-top: 3.5px; font-size: 16px;">" 오늘도 좋은 하루 되세요. "</span>
+	            </div>
+	            
                <figure class="highcharts-figure">
                   <div id="counselorChartStress"></div>
                </figure>
             </div>
-            <div class="detail-area-header">
-            <div class="detail-title">고객 불쾌 지수<span id="customerResultEmoji"><img class="customerEmoji" src="assets/img/soso.png" alt="" style="width:30px; height:30px; margin-left:20px;"/></span></div>
+            <div class="detail-area-header" style="align-items: flex-start;">
+	            <div class="detail-title">고객 불쾌 지수
+	            	<span id="customerResultEmoji"><img class="customerEmoji" src="assets/img/soso.png" alt="" style="width:30px; height:30px; margin-left:20px;"/></span>
+	            </div>
             <div class="customerEmoji"></div>
                <figure class="highcharts-figure">
                   <div id="customerChartStress"></div>
