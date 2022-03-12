@@ -13,6 +13,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Saltlux three jo - Chatting</title>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 <link rel="stylesheet" href="./popupStyle.css">
 
@@ -132,11 +133,14 @@
 		// 감성 - 최종
 		var SentimentResult = [];
 		
+		var sep = window.opener.document.getElementById("sep").value;
+
 		// 비동기요청
 		$.ajax({
 			url:req_url,
 			async: true,
-			type: "GET",
+			type: "POST",
+			data: JSON.stringify(sep),
 			processData: false,
 			contentType: false,
 			success: function(data){
